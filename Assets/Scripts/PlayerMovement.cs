@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
     float hInput;
     float vInput;
     float speed = 5.0f;
-    float maxSpeed = 3.0f; 
+    float maxSpeed = 5.0f; 
     Vector3 moveDirection;
     Animator anim;
     RotateTurnstile turnstile; 
