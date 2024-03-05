@@ -11,7 +11,8 @@ public class PlayerMovement : MonoBehaviour
     float maxSpeed = 5.0f; 
     Vector3 moveDirection;
     Animator anim;
-    RotateTurnstile turnstile; 
+    RotateTurnstile turnstile;
+    
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
