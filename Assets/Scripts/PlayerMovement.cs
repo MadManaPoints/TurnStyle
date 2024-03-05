@@ -32,7 +32,7 @@ public class PlayerMovement : MonoBehaviour
         hInput = Input.GetAxisRaw("Horizontal"); 
         vInput = Input.GetAxisRaw("Vertical");
 
-        moveDirection = transform.forward * vInput + transform.right * hInput;
+        moveDirection = transform.forward * vInput;  //+ transform.right * hInput;
 
         playerRb.AddForce(moveDirection.normalized * speed); 
 

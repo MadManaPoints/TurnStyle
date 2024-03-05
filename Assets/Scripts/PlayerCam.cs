@@ -7,9 +7,9 @@ public class PlayerCam : MonoBehaviour
     float xRotation;
     float yRotation;
     float stopX = 55.0f; 
-    //float stopY = 60.0f; 
+    //[SerializeField] float stopY = 100.0f; 
     [SerializeField] float sensitivity; 
-    [SerializeField] Transform orientation;
+    //[SerializeField] Transform orientation;
     void Start()
     {
         
@@ -32,6 +32,6 @@ public class PlayerCam : MonoBehaviour
         //yRotation = Mathf.Clamp(yRotation, -stopY, stopY);
 
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-        orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+        //orientation.rotation = Quaternion.Euler(0, yRotation, 0);
     }
 }
