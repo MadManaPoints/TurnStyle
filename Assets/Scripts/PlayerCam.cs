@@ -7,7 +7,7 @@ public class PlayerCam : MonoBehaviour
     float xRotation;
     float yRotation;
     float stopX = 55.0f; 
-    //[SerializeField] float stopY = 100.0f; 
+    [SerializeField] float stopY = 200.0f; 
     [SerializeField] float sensitivity; 
     //[SerializeField] Transform orientation;
     void Start()
@@ -29,7 +29,7 @@ public class PlayerCam : MonoBehaviour
 
         //Ensures the player can't look 360 degrees up and down
         xRotation = Mathf.Clamp(xRotation, -stopX, stopX);
-        //yRotation = Mathf.Clamp(yRotation, -stopY, stopY);
+        yRotation = Mathf.Clamp(yRotation, -stopY, stopY);
 
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
         //orientation.rotation = Quaternion.Euler(0, yRotation, 0);

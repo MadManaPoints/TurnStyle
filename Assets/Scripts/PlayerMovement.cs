@@ -5,10 +5,11 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     Rigidbody playerRb;
-    float hInput;
+    //float hInput;
     float vInput;
-    [SerializeField] float speed = 5.0f;
-    [SerializeField] float maxSpeed = 5.0f;
+    float tempSpeed = -200.0f; 
+    [SerializeField] float speed;
+    [SerializeField] float maxSpeed;
     Vector3 moveDirection;
     Animator anim;
     RotateTurnstile turnstile;
@@ -29,12 +30,12 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void MovePlayer(){
-        hInput = Input.GetAxisRaw("Horizontal"); 
+        //hInput = Input.GetAxisRaw("Horizontal"); 
         vInput = Input.GetAxisRaw("Vertical");
 
         moveDirection = transform.forward * vInput;  //+ transform.right * hInput;
 
-        playerRb.AddForce(moveDirection.normalized * speed); 
+        playerRb.AddForce(moveDirection.normalized * speed * Time.deltaTime); 
 
         if(playerRb.velocity.magnitude > maxSpeed){
             playerRb.velocity = Vector3.ClampMagnitude(playerRb.velocity, maxSpeed); 
@@ -42,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void SetAnim(){
-        if(playerRb.velocity != Vector3.zero && playerRb.velocity.magnitude > 1.0f){
+        if(playerRb.velocity != Vector3.zero && playerRb.velocity.magnitude > 0.08f){
             anim.SetBool("Walking", true); 
         } else {
             anim.SetBool("Walking", false);
@@ -60,14 +61,15 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void OnCollisionEnter(Collision col){
-        if(col.gameObject.tag == "Turnstile"){
+        if(col.gameObject.tag == "Turnstile" && !turnstile.stuck){
+            turnstile.rotateSpeed = tempSpeed; 
             turnstile.moveTurnstile = true; 
         }
     }
 
     void OnCollisionExit(Collision col){
-        if(col.gameObject.tag == "Turnstile"){
-            turnstile.moveTurnstile = false; 
+        if(col.gameObject.tag == "Turnstile" && turnstile.stuck){
+            //
         }
     }
 }
