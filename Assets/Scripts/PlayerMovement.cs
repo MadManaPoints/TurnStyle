@@ -24,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        Debug.Log(playerRb.velocity.magnitude);
         MovePlayer();
         SetAnim();
         LockMouse(); 

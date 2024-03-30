@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerCam : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class PlayerCam : MonoBehaviour
 
         //Ensures the player can't look 360 degrees up and down
         xRotation = Mathf.Clamp(xRotation, -stopX, stopX);
-        yRotation = Mathf.Clamp(yRotation, -stopY, stopY);
+        yRotation = Mathf.Clamp(yRotation, 15, 180);
 
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
         //orientation.rotation = Quaternion.Euler(0, yRotation, 0);
