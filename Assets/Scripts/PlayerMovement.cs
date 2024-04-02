@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     Rigidbody playerRb;
-    //float hInput;
     float vInput;
     float tempSpeed = -200.0f; 
     [SerializeField] float speed;
@@ -14,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     Animator anim;
     RotateTurnstile turnstile;
     public KeyCode esc = KeyCode.Escape;
+    public bool phaseOne; 
     
     void Start()
     {
@@ -24,8 +24,10 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(playerRb.velocity.magnitude);
-        MovePlayer();
+        //Debug.Log(playerRb.velocity.magnitude);
+        if(!phaseOne){
+            MovePlayer();
+        }
         SetAnim();
         LockMouse(); 
     }
@@ -49,6 +51,10 @@ public class PlayerMovement : MonoBehaviour
         } else {
             anim.SetBool("Walking", false);
         }
+
+        if(phaseOne){
+            anim.SetBool("Phase 1", true); 
+        }
     }
 
     void LockMouse(){
@@ -70,7 +76,6 @@ public class PlayerMovement : MonoBehaviour
 
     void OnCollisionExit(Collision col){
         if(col.gameObject.tag == "Turnstile" && turnstile.stuck){
-            //
         }
     }
 }
