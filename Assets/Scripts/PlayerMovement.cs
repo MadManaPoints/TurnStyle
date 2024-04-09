@@ -13,8 +13,8 @@ public class PlayerMovement : MonoBehaviour
     Animator anim;
     RotateTurnstile turnstile;
     public KeyCode esc = KeyCode.Escape;
-    public bool phaseOne; 
-    
+    public bool stopAtTurnstile; 
+    public bool phaseOne;
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         //Debug.Log(playerRb.velocity.magnitude);
-        if(!phaseOne){
+        if(!stopAtTurnstile){
             MovePlayer();
         }
         SetAnim();
@@ -46,14 +46,14 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void SetAnim(){
-        if(playerRb.velocity != Vector3.zero && playerRb.velocity.magnitude > 0.08f){
-            anim.SetBool("Walking", true); 
-        } else {
-            anim.SetBool("Walking", false);
-        }
-
         if(phaseOne){
             anim.SetBool("Phase 1", true); 
+            //anim.enabled = false; 
+            Debug.Log("Phase 1");
+        } else if(playerRb.velocity != Vector3.zero && playerRb.velocity.magnitude > 0.08f){
+            anim.SetBool("Walking", true);
+        } else {
+            anim.SetBool("Walking", false);
         }
     }
 
