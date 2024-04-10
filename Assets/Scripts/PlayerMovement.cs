@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     public KeyCode esc = KeyCode.Escape;
     public bool stopAtTurnstile; 
     public bool phaseOne;
+    public bool phaseTwo;
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
@@ -29,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
             MovePlayer();
         }
         SetAnim();
-        LockMouse(); 
+        LockMouse();
     }
 
     void MovePlayer(){
@@ -47,9 +48,11 @@ public class PlayerMovement : MonoBehaviour
 
     void SetAnim(){
         if(phaseOne){
-            anim.SetBool("Phase 1", true); 
+            anim.SetBool("Phase 1", true);
             //anim.enabled = false; 
             Debug.Log("Phase 1");
+        } else if(phaseTwo){
+            anim.SetBool("Phase 2", true);
         } else if(playerRb.velocity != Vector3.zero && playerRb.velocity.magnitude > 0.08f){
             anim.SetBool("Walking", true);
         } else {
@@ -60,10 +63,10 @@ public class PlayerMovement : MonoBehaviour
     void LockMouse(){
         if(Cursor.visible == false && Input.GetKeyDown(esc)){
             Cursor.lockState = CursorLockMode.Locked; 
-            Cursor.visible = true; 
+            Cursor.visible = true;
         } else if(Cursor.visible == true && Input.GetMouseButtonDown(0)){
-            Cursor.lockState = CursorLockMode.None; 
-            Cursor.visible = false; 
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = false;
         }
     }
 

@@ -10,19 +10,20 @@ public class SceneManager : MonoBehaviour
     PlayerCam playerCam;
     RightArm rightArm;
     InputManager inputs;
-    [SerializeField] GameObject phaseOneText; 
-    //this is for when I change text in code - for now I'm just disabling the gameObject 
-    //string phanseOneText = "Press X to Swipe MetroCard"; 
+    [SerializeField] GameObject phaseOneText;
+    [SerializeField] GameObject phaseTwoText;
+    //this is for when I change text in code - for now I'm just disabling the gameObject
+    //string phanseOneText = "Press X to Swipe MetroCard";
     
-    //"Remember that Awake() is just like Start(), except it's called even before Start()" - Some guy 
+    //"Remember that Awake() is just like Start(), except it's called even before Start()" - Some guy
     void Awake(){
-        inputs = new InputManager(); 
+        inputs = new InputManager();
 
-        //action map > action > .started || .performed || .canceled 
-        //Lambda expressions are kind of like mini functions 
+        //action map > action > .started || .performed || .canceled
+        //Lambda expressions are kind of like mini functions
             //works by inserting a parameter on the left
-
-        inputs.Player.Phase1.performed += ctx => StartPhaseOne(); 
+        inputs.Player.Phase1.performed += ctx => StartPhaseOne();
+        inputs.Player.Phase2.performed += ctx => StartPhaseTwo(); 
     }
 
     void Start()
@@ -32,6 +33,7 @@ public class SceneManager : MonoBehaviour
         //the arm that we want the player to move
         rightArm = GameObject.Find("Bone.003_R.002").GetComponent<RightArm>();
         phaseOneText.SetActive(false); 
+        phaseTwoText.SetActive(false);
     }
 
     void StartPhaseOne(){
@@ -40,7 +42,17 @@ public class SceneManager : MonoBehaviour
             rightArm.canMoveArm = true;
             playerCam.canMoveCam = false;
             //Debug.Log(player.phaseOne);
-            phaseOneText.SetActive(false); 
+            phaseOneText.SetActive(false);
+            phaseTwoText.SetActive(true);
+        }
+    }
+
+    void StartPhaseTwo(){
+        if(player.phaseOne){
+            player.phaseTwo = true;
+            phaseTwoText.SetActive(false);
+            player.phaseOne = false;
+            playerCam.nextPos = true; 
         }
     }
 

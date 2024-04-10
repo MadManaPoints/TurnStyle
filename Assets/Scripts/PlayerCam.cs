@@ -11,7 +11,9 @@ public class PlayerCam : MonoBehaviour
     //[SerializeField] float stopY = 175.0f; 
     [SerializeField] float sensitivity;
     public bool canMoveCam = true;
-    [SerializeField] Vector3 phaseOnePos = new Vector3(36.0f, 25.0f, 10.0f);
+    public bool nextPos;
+    [SerializeField] Vector3 phaseOnePos = new Vector3(0.0f, 0.0f, 0.0f);
+    [SerializeField] Vector3 phaseTwoPos = new Vector3(0.0f, 0.0f, 0.0f); 
     Vector3 velocity = Vector3.zero;
     [SerializeField] Transform player;
     [SerializeField] Vector3 offset;
@@ -22,18 +24,21 @@ public class PlayerCam : MonoBehaviour
     }
 
     void Update()
-    {   transform.position = player.transform.position + offset;
+    {   
+        transform.position = player.transform.position + offset;
+
         if(canMoveCam){
             CameraControls();
+        } else if(nextPos){
+            PhaseTwoCamPos();
         } else {
             PhaseOneCamPos();
         }
-         
     }
 
     void CameraControls(){
         float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensitivity;
-        float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensitivity; 
+        float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensitivity;
 
         yRotation += mouseX;
         xRotation -= mouseY;
@@ -48,5 +53,9 @@ public class PlayerCam : MonoBehaviour
 
     void PhaseOneCamPos(){
         transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, phaseOnePos, ref velocity, 0.3f);
+    }
+
+    void PhaseTwoCamPos(){
+        transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, phaseTwoPos, ref velocity, 0.3f);
     }
 }

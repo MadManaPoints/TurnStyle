@@ -44,6 +44,15 @@ public partial class @InputManager: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Phase 2"",
+                    ""type"": ""Button"",
+                    ""id"": ""71d28489-78bb-4f44-931b-da29e9687a2d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -112,6 +121,17 @@ public partial class @InputManager: IInputActionCollection2, IDisposable
                     ""action"": ""Phase 1"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f1a2fa93-43cd-49b5-a1cb-ff49b5554dd6"",
+                    ""path"": ""<XInputController>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Xbox Control Scheme"",
+                    ""action"": ""Phase 2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -134,6 +154,7 @@ public partial class @InputManager: IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
         m_Player_Phase1 = m_Player.FindAction("Phase 1", throwIfNotFound: true);
+        m_Player_Phase2 = m_Player.FindAction("Phase 2", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -197,12 +218,14 @@ public partial class @InputManager: IInputActionCollection2, IDisposable
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Movement;
     private readonly InputAction m_Player_Phase1;
+    private readonly InputAction m_Player_Phase2;
     public struct PlayerActions
     {
         private @InputManager m_Wrapper;
         public PlayerActions(@InputManager wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
         public InputAction @Phase1 => m_Wrapper.m_Player_Phase1;
+        public InputAction @Phase2 => m_Wrapper.m_Player_Phase2;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -218,6 +241,9 @@ public partial class @InputManager: IInputActionCollection2, IDisposable
             @Phase1.started += instance.OnPhase1;
             @Phase1.performed += instance.OnPhase1;
             @Phase1.canceled += instance.OnPhase1;
+            @Phase2.started += instance.OnPhase2;
+            @Phase2.performed += instance.OnPhase2;
+            @Phase2.canceled += instance.OnPhase2;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -228,6 +254,9 @@ public partial class @InputManager: IInputActionCollection2, IDisposable
             @Phase1.started -= instance.OnPhase1;
             @Phase1.performed -= instance.OnPhase1;
             @Phase1.canceled -= instance.OnPhase1;
+            @Phase2.started -= instance.OnPhase2;
+            @Phase2.performed -= instance.OnPhase2;
+            @Phase2.canceled -= instance.OnPhase2;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -258,5 +287,6 @@ public partial class @InputManager: IInputActionCollection2, IDisposable
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnPhase1(InputAction.CallbackContext context);
+        void OnPhase2(InputAction.CallbackContext context);
     }
 }

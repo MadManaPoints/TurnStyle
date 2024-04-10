@@ -1,30 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RightArm : MonoBehaviour
 {
     public bool canMoveArm;
-    float speed = 10.0f;
-    Vector3 moveArm; 
-
+    float speed = 50.0f;
+    [SerializeField] Transform over; 
+    [SerializeField] Vector3 armRotation;
+    Vector3 offset = new Vector3(0.3f, 0, 0); 
     void Start()
     {
         
     }
 
-    void Update()
+    void LateUpdate()
     {
         if(canMoveArm){
-            Move(); 
+            Move();
+        } else {
+            over.position = this.transform.position; 
         }
     }
 
     void Move(){
-        float mouseX = Input.GetAxisRaw("Mouse X");
-        float mouseZ = Input.GetAxisRaw("Mouse Y");
-
-        moveArm = new Vector3(-mouseX * speed * Time.deltaTime, 0, mouseZ * speed * Time.deltaTime);
-        transform.Translate(moveArm);
+        this.transform.position = over.position + offset;
+        this.transform.rotation = Quaternion.Euler(this.transform.eulerAngles.x, over.transform.localEulerAngles.y, this.transform.eulerAngles.z);
+        float move = Input.GetAxis("Mouse X"); 
+        over.Rotate(new Vector3(0, move, 0) * speed * Time.deltaTime);
     }
 }
