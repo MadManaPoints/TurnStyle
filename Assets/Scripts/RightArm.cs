@@ -12,7 +12,7 @@ public class RightArm : MonoBehaviour
     public bool phoneSwapped;
     //Vector3 phonePosition; 
     float speed = 1.0f;
-    //[SerializeField] Transform over; 
+    //[SerializeField] Transform over;
     //[SerializeField] Vector3 armRotation;
     Vector3 offset = new Vector3(0.1f, 0, 0);
     Vector3 newOffset = new Vector3(0.3f, 0, 0);
@@ -50,9 +50,9 @@ public class RightArm : MonoBehaviour
         
 
         if(!swapToPhone){
+            Debug.Log(pos.z);
             SwipePosition(moveX, moveZ);
         } else {
-            Debug.Log(pos.z);
             HoldingPhone(moveX, moveZ);
         }
         //over.Rotate(new Vector3(0, move, 0) * speed * Time.deltaTime);

@@ -53,6 +53,42 @@ public partial class @InputManager: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Phase 3"",
+                    ""type"": ""Button"",
+                    ""id"": ""cefc1ac4-2b2d-4f51-8f77-9936ce2c4484"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Grab"",
+                    ""type"": ""Value"",
+                    ""id"": ""411453ff-4982-412e-9cf1-40fc3b832dad"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Move Leg"",
+                    ""type"": ""Value"",
+                    ""id"": ""dce77ac1-1f39-4ccc-aaca-0932e9070a23"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Move Forward"",
+                    ""type"": ""Value"",
+                    ""id"": ""f2c38d8c-8559-4f7f-89e9-26eec9059e69"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -132,6 +168,50 @@ public partial class @InputManager: IInputActionCollection2, IDisposable
                     ""action"": ""Phase 2"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d0ed413a-9bf4-4d40-adac-453d8f51a5de"",
+                    ""path"": ""<XInputController>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Xbox Control Scheme"",
+                    ""action"": ""Phase 3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""869af509-8ef6-42e9-8dd7-5d4670956d1b"",
+                    ""path"": ""<XInputController>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Xbox Control Scheme"",
+                    ""action"": ""Grab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""926bde60-8657-4d56-b7f0-013124c5c871"",
+                    ""path"": ""<XInputController>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Xbox Control Scheme"",
+                    ""action"": ""Move Leg"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1e100f01-cd41-490c-841b-b5d6c579ace7"",
+                    ""path"": ""<XInputController>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Xbox Control Scheme"",
+                    ""action"": ""Move Forward"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -155,6 +235,10 @@ public partial class @InputManager: IInputActionCollection2, IDisposable
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
         m_Player_Phase1 = m_Player.FindAction("Phase 1", throwIfNotFound: true);
         m_Player_Phase2 = m_Player.FindAction("Phase 2", throwIfNotFound: true);
+        m_Player_Phase3 = m_Player.FindAction("Phase 3", throwIfNotFound: true);
+        m_Player_Grab = m_Player.FindAction("Grab", throwIfNotFound: true);
+        m_Player_MoveLeg = m_Player.FindAction("Move Leg", throwIfNotFound: true);
+        m_Player_MoveForward = m_Player.FindAction("Move Forward", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -219,6 +303,10 @@ public partial class @InputManager: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Movement;
     private readonly InputAction m_Player_Phase1;
     private readonly InputAction m_Player_Phase2;
+    private readonly InputAction m_Player_Phase3;
+    private readonly InputAction m_Player_Grab;
+    private readonly InputAction m_Player_MoveLeg;
+    private readonly InputAction m_Player_MoveForward;
     public struct PlayerActions
     {
         private @InputManager m_Wrapper;
@@ -226,6 +314,10 @@ public partial class @InputManager: IInputActionCollection2, IDisposable
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
         public InputAction @Phase1 => m_Wrapper.m_Player_Phase1;
         public InputAction @Phase2 => m_Wrapper.m_Player_Phase2;
+        public InputAction @Phase3 => m_Wrapper.m_Player_Phase3;
+        public InputAction @Grab => m_Wrapper.m_Player_Grab;
+        public InputAction @MoveLeg => m_Wrapper.m_Player_MoveLeg;
+        public InputAction @MoveForward => m_Wrapper.m_Player_MoveForward;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -244,6 +336,18 @@ public partial class @InputManager: IInputActionCollection2, IDisposable
             @Phase2.started += instance.OnPhase2;
             @Phase2.performed += instance.OnPhase2;
             @Phase2.canceled += instance.OnPhase2;
+            @Phase3.started += instance.OnPhase3;
+            @Phase3.performed += instance.OnPhase3;
+            @Phase3.canceled += instance.OnPhase3;
+            @Grab.started += instance.OnGrab;
+            @Grab.performed += instance.OnGrab;
+            @Grab.canceled += instance.OnGrab;
+            @MoveLeg.started += instance.OnMoveLeg;
+            @MoveLeg.performed += instance.OnMoveLeg;
+            @MoveLeg.canceled += instance.OnMoveLeg;
+            @MoveForward.started += instance.OnMoveForward;
+            @MoveForward.performed += instance.OnMoveForward;
+            @MoveForward.canceled += instance.OnMoveForward;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -257,6 +361,18 @@ public partial class @InputManager: IInputActionCollection2, IDisposable
             @Phase2.started -= instance.OnPhase2;
             @Phase2.performed -= instance.OnPhase2;
             @Phase2.canceled -= instance.OnPhase2;
+            @Phase3.started -= instance.OnPhase3;
+            @Phase3.performed -= instance.OnPhase3;
+            @Phase3.canceled -= instance.OnPhase3;
+            @Grab.started -= instance.OnGrab;
+            @Grab.performed -= instance.OnGrab;
+            @Grab.canceled -= instance.OnGrab;
+            @MoveLeg.started -= instance.OnMoveLeg;
+            @MoveLeg.performed -= instance.OnMoveLeg;
+            @MoveLeg.canceled -= instance.OnMoveLeg;
+            @MoveForward.started -= instance.OnMoveForward;
+            @MoveForward.performed -= instance.OnMoveForward;
+            @MoveForward.canceled -= instance.OnMoveForward;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -288,5 +404,9 @@ public partial class @InputManager: IInputActionCollection2, IDisposable
         void OnMovement(InputAction.CallbackContext context);
         void OnPhase1(InputAction.CallbackContext context);
         void OnPhase2(InputAction.CallbackContext context);
+        void OnPhase3(InputAction.CallbackContext context);
+        void OnGrab(InputAction.CallbackContext context);
+        void OnMoveLeg(InputAction.CallbackContext context);
+        void OnMoveForward(InputAction.CallbackContext context);
     }
 }

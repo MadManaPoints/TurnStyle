@@ -12,6 +12,11 @@ public class SceneManager : MonoBehaviour
     InputManager inputs;
     [SerializeField] GameObject phaseOneText;
     [SerializeField] GameObject phaseTwoText;
+    [SerializeField] GameObject phaseThreeText;
+    bool grab;
+    bool moveLeg;
+    bool moveForward;
+    
     //this is for when I change text in code - for now I'm just disabling the gameObject
     //string phanseOneText = "Press X to Swipe MetroCard";
     
@@ -23,7 +28,8 @@ public class SceneManager : MonoBehaviour
         //Lambda expressions are kind of like mini functions
             //works by inserting a parameter on the left
         inputs.Player.Phase1.performed += ctx => StartPhaseOne();
-        inputs.Player.Phase2.performed += ctx => StartPhaseTwo(); 
+        inputs.Player.Phase2.performed += ctx => StartPhaseTwo();
+        inputs.Player.Phase3.performed += ctx => StartPhaseThree();
     }
 
     void Start()
@@ -34,12 +40,13 @@ public class SceneManager : MonoBehaviour
         rightArm = GameObject.Find("Right Hand_target").GetComponent<RightArm>();
         phaseOneText.SetActive(false); 
         phaseTwoText.SetActive(false);
+        phaseThreeText.SetActive(false);
     }
 
     void Update(){
         if(rightArm.swiped){
                 phaseTwoText.SetActive(true);
-            } 
+            }
 
          if(rightArm.pressedY){
             player.phaseTwo = true;
@@ -53,7 +60,14 @@ public class SceneManager : MonoBehaviour
 
         if(rightArm.phoneSwapped){
             player.newPosition = true;
+            phaseThreeText.SetActive(true);
         }
+
+        //Debug.Log(moveForward);
+
+        grab = inputs.Player.Grab.IsInProgress();
+        moveLeg = inputs.Player.MoveLeg.IsInProgress();
+        moveForward = inputs.Player.MoveForward.IsInProgress();
     }
 
     void StartPhaseOne(){
@@ -69,6 +83,12 @@ public class SceneManager : MonoBehaviour
     void StartPhaseTwo(){
         if(rightArm.swiped){
             rightArm.pressedY = true;
+        }
+    }
+
+    void StartPhaseThree(){
+        if(player.newPosition){
+            Debug.Log("THAT'S IT FOR NOW");
         }
     }
 
