@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -16,11 +17,15 @@ public class PlayerMovement : MonoBehaviour
     public bool stopAtTurnstile; 
     public bool phaseOne;
     public bool phaseTwo;
+    public bool newPosition; 
+    bool newPosStop;
+    public RigBuilder rig;
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
         turnstile = GameObject.Find("Turn Thing").GetComponent<RotateTurnstile>();
+        rig = GetComponent<RigBuilder>();
     }
 
     void Update()
@@ -29,6 +34,12 @@ public class PlayerMovement : MonoBehaviour
         if(!stopAtTurnstile){
             MovePlayer();
         }
+
+        if(newPosition && !newPosStop){
+            transform.position = new Vector3(transform.position.x - 0.4f, transform.position.y, transform.position.z);
+            newPosStop = true;
+        }
+
         SetAnim();
         LockMouse();
     }
@@ -50,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
         if(phaseOne){
             anim.SetBool("Phase 1", true);
             //anim.enabled = false; 
-            Debug.Log("Phase 1");
+            //Debug.Log("Phase 1");
         } else if(phaseTwo){
             anim.SetBool("Phase 2", true);
         } else if(playerRb.velocity != Vector3.zero && playerRb.velocity.magnitude > 0.08f){

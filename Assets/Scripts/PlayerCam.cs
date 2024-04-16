@@ -17,6 +17,7 @@ public class PlayerCam : MonoBehaviour
     Vector3 velocity = Vector3.zero;
     [SerializeField] Transform player;
     [SerializeField] Vector3 offset;
+    [SerializeField] Vector3 newOffset;
     
     void Start()
     {
@@ -25,8 +26,6 @@ public class PlayerCam : MonoBehaviour
 
     void Update()
     {   
-        transform.position = player.transform.position + offset;
-
         if(canMoveCam){
             CameraControls();
         } else if(nextPos){
@@ -37,6 +36,7 @@ public class PlayerCam : MonoBehaviour
     }
 
     void CameraControls(){
+        transform.position = player.transform.position + offset;
         float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensitivity;
         float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensitivity;
 
@@ -52,10 +52,12 @@ public class PlayerCam : MonoBehaviour
     }
 
     void PhaseOneCamPos(){
+        transform.position = player.transform.position + offset;
         transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, phaseOnePos, ref velocity, 0.3f);
     }
 
     void PhaseTwoCamPos(){
+        transform.position = player.transform.position + newOffset;
         transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, phaseTwoPos, ref velocity, 0.3f);
     }
 }

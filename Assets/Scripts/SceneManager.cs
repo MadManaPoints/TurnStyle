@@ -31,28 +31,44 @@ public class SceneManager : MonoBehaviour
         player = GameObject.Find("Player").GetComponent<PlayerMovement>();
         playerCam = GameObject.Find("Main Camera").GetComponent<PlayerCam>();
         //the arm that we want the player to move
-        rightArm = GameObject.Find("Bone.003_R.002").GetComponent<RightArm>();
+        rightArm = GameObject.Find("Right Hand_target").GetComponent<RightArm>();
         phaseOneText.SetActive(false); 
         phaseTwoText.SetActive(false);
     }
 
+    void Update(){
+        if(rightArm.swiped){
+                phaseTwoText.SetActive(true);
+            } 
+
+         if(rightArm.pressedY){
+            player.phaseTwo = true;
+            phaseTwoText.SetActive(false);
+            player.phaseOne = false;
+            playerCam.nextPos = true; 
+            rightArm.swiped = false;
+            rightArm.pressedY = false;
+            rightArm.swapToPhone = true;
+        }
+
+        if(rightArm.phoneSwapped){
+            player.newPosition = true;
+        }
+    }
+
     void StartPhaseOne(){
-        if(player.stopAtTurnstile){
+        if(player.stopAtTurnstile && !playerCam.nextPos){
             player.phaseOne = true;
             rightArm.canMoveArm = true;
             playerCam.canMoveCam = false;
             //Debug.Log(player.phaseOne);
             phaseOneText.SetActive(false);
-            phaseTwoText.SetActive(true);
         }
     }
 
     void StartPhaseTwo(){
-        if(player.phaseOne){
-            player.phaseTwo = true;
-            phaseTwoText.SetActive(false);
-            player.phaseOne = false;
-            playerCam.nextPos = true; 
+        if(rightArm.swiped){
+            rightArm.pressedY = true;
         }
     }
 
