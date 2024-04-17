@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,12 +13,15 @@ public class PlayerCam : MonoBehaviour
     [SerializeField] float sensitivity;
     public bool canMoveCam = true;
     public bool nextPos;
+    public bool finalCamPos; 
     [SerializeField] Vector3 phaseOnePos = new Vector3(0.0f, 0.0f, 0.0f);
     [SerializeField] Vector3 phaseTwoPos = new Vector3(0.0f, 0.0f, 0.0f); 
+    [SerializeField] Vector3 phaseThreePos = new Vector3(0, 0, 0);
     Vector3 velocity = Vector3.zero;
     [SerializeField] Transform player;
     [SerializeField] Vector3 offset;
     [SerializeField] Vector3 newOffset;
+    [SerializeField] Vector3 finalOffset;
     
     void Start()
     {
@@ -28,6 +32,8 @@ public class PlayerCam : MonoBehaviour
     {   
         if(canMoveCam){
             CameraControls();
+        } else if(finalCamPos){
+            PhaseThreeCamPos();
         } else if(nextPos){
             PhaseTwoCamPos();
         } else {
@@ -59,5 +65,10 @@ public class PlayerCam : MonoBehaviour
     void PhaseTwoCamPos(){
         transform.position = player.transform.position + newOffset;
         transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, phaseTwoPos, ref velocity, 0.3f);
+    }
+
+    void PhaseThreeCamPos(){
+        transform.position = player.transform.position + finalOffset;
+        transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, phaseThreePos, ref velocity, 0.3f);
     }
 }

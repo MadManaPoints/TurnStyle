@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
 {
     Rigidbody playerRb;
     float vInput;
-    float tempSpeed = -200.0f; 
+    //float tempSpeed = -200.0f; 
     [SerializeField] float speed;
     [SerializeField] float maxSpeed;
     Vector3 moveDirection;
@@ -18,6 +18,8 @@ public class PlayerMovement : MonoBehaviour
     public bool phaseOne;
     public bool phaseTwo;
     public bool newPosition; 
+    public bool finalPos;
+    bool finalPosStop;
     bool newPosStop;
     public RigBuilder rig;
     void Start()
@@ -38,6 +40,12 @@ public class PlayerMovement : MonoBehaviour
         if(newPosition && !newPosStop){
             transform.position = new Vector3(transform.position.x - 0.4f, transform.position.y, transform.position.z);
             newPosStop = true;
+        }
+
+        if(finalPos && !finalPosStop){
+            transform.position = new Vector3(1.4f, transform.position.y, 2.2f);
+            transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, 5.8f, transform.localEulerAngles.z);
+            finalPosStop = true;
         }
 
         SetAnim();
@@ -83,8 +91,8 @@ public class PlayerMovement : MonoBehaviour
 
     void OnCollisionEnter(Collision col){
         if(col.gameObject.tag == "Turnstile" && !turnstile.stuck){
-            turnstile.rotateSpeed = tempSpeed; 
-            turnstile.moveTurnstile = true; 
+            //turnstile.rotateSpeed = tempSpeed; 
+            //turnstile.moveTurnstile = true; 
         }
     }
 

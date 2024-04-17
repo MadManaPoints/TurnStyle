@@ -9,6 +9,7 @@ public class SceneManager : MonoBehaviour
     PlayerMovement player;
     PlayerCam playerCam;
     RightArm rightArm;
+    RotateTurnstile turnstile;
     InputManager inputs;
     [SerializeField] GameObject phaseOneText;
     [SerializeField] GameObject phaseTwoText;
@@ -38,17 +39,23 @@ public class SceneManager : MonoBehaviour
         playerCam = GameObject.Find("Main Camera").GetComponent<PlayerCam>();
         //the arm that we want the player to move
         rightArm = GameObject.Find("Right Hand_target").GetComponent<RightArm>();
+        //turn the thing!!!!!!
+        turnstile = GameObject.Find("Turn Thing").GetComponent<RotateTurnstile>();
         phaseOneText.SetActive(false); 
         phaseTwoText.SetActive(false);
         phaseThreeText.SetActive(false);
     }
 
     void Update(){
+        grab = inputs.Player.Grab.IsInProgress();
+        moveLeg = inputs.Player.MoveLeg.IsInProgress();
+        moveForward = inputs.Player.MoveForward.IsInProgress();
+
         if(rightArm.swiped){
                 phaseTwoText.SetActive(true);
             }
 
-         if(rightArm.pressedY){
+         if(rightArm.pressedY && player){
             player.phaseTwo = true;
             phaseTwoText.SetActive(false);
             player.phaseOne = false;
@@ -58,16 +65,18 @@ public class SceneManager : MonoBehaviour
             rightArm.swapToPhone = true;
         }
 
-        if(rightArm.phoneSwapped){
+        if(rightArm.phoneSwapped && !player.finalPos){
             player.newPosition = true;
             phaseThreeText.SetActive(true);
         }
 
-        //Debug.Log(moveForward);
+        if(player.finalPos){
+            phaseThreeText.SetActive(false);
+            //Debug.Log(grab);
+            turnstile.moveTurnstile = grab;
+        }
 
-        grab = inputs.Player.Grab.IsInProgress();
-        moveLeg = inputs.Player.MoveLeg.IsInProgress();
-        moveForward = inputs.Player.MoveForward.IsInProgress();
+        //Debug.Log(grab);
     }
 
     void StartPhaseOne(){
@@ -88,7 +97,10 @@ public class SceneManager : MonoBehaviour
 
     void StartPhaseThree(){
         if(player.newPosition){
-            Debug.Log("THAT'S IT FOR NOW");
+            //Debug.Log("THAT'S IT FOR NOW");
+            player.finalPos = true;
+            rightArm.finalPhase = true;
+            playerCam.finalCamPos = true;
         }
     }
 
@@ -104,7 +116,9 @@ public class SceneManager : MonoBehaviour
         if(col.gameObject.tag == "Player"){
             //Debug.Log("YERR");
             player.stopAtTurnstile = true;
-            phaseOneText.SetActive(true);
+            if(!player.finalPos){
+                phaseOneText.SetActive(true);
+            }
         }
     }
 }

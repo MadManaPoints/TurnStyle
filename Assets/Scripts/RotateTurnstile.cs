@@ -1,27 +1,47 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RotateTurnstile : MonoBehaviour
 {
+    RightArm rightArm;
     //public float x, y, z; //this was to test rotation - use z to move new turnstile 
     public bool moveTurnstile;
     public bool stuck; 
-    public float rotateSpeed = 0f;
+    public float rotateSpeed = 3.0f;
+    Transform startPos;
+    [SerializeField] float stopTurnstile;
     void Start()
     {
-        
+        rightArm = GameObject.Find("Right Hand_target").GetComponent<RightArm>();
+        startPos = this.transform;
+        startPos.localEulerAngles = transform.localEulerAngles;
     }
 
     void Update()
     {
         if(moveTurnstile){
-            transform.Rotate(0, 0, rotateSpeed * Time.deltaTime);
-            if(transform.rotation.z < -0.05f){
-                moveTurnstile = false;
-                stuck = true; 
-            }
-        } 
-        //Debug.Log(transform.rotation.z);
+            SpinTurnstile();
+        }
+    }
+
+    void SpinTurnstile(){
+        float moveY = Input.GetAxis("Mouse Y") * (1.0f + Time.deltaTime);
+
+        float rotateZ = map(moveY, -1, 1, -90, 90);
+        rotateZ = Mathf.Min(rotateZ, stopTurnstile);
+        float rotateTurnstile = Mathf.Lerp(startPos.localEulerAngles.z, rotateZ, 0.5f);
+        startPos.localEulerAngles = new Vector3(startPos.localEulerAngles.x, startPos.localEulerAngles.y, -rotateTurnstile);
+        Debug.Log(moveY);
+    }
+
+    float map(float value, float minA, float maxA, float minB, float maxB){
+        float range = maxA - minA; 
+        float valuePercent = (value - minA) / range;
+
+        float newRange = maxB - minB;
+        
+        return valuePercent * newRange + minB;
     }
 }

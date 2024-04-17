@@ -227,6 +227,7 @@ MonoBehaviour:
   swiped: 0
   swapToPhone: 0
   phoneSwapped: 0
+  finalPhase: 0
   pos: {x: 0, y: 0, z: 0}
 --- !u!1 &171076691
 GameObject:
@@ -582,6 +583,7 @@ MonoBehaviour:
   moveTurnstile: 0
   stuck: 0
   rotateSpeed: -200
+  stopTurnstile: 10
 --- !u!4 &493357896 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1300264252759386080, guid: db3dce5cf49fb014983da1445d3eaf2d, type: 3}
@@ -709,6 +711,7 @@ MonoBehaviour:
   phaseOne: 0
   phaseTwo: 0
   newPosition: 0
+  finalPos: 0
   rig: {fileID: 628497140}
 --- !u!65 &628497138
 BoxCollider:
@@ -2042,11 +2045,14 @@ MonoBehaviour:
   sensitivity: 150
   canMoveCam: 1
   nextPos: 0
+  finalCamPos: 0
   phaseOnePos: {x: 36, y: 115, z: 5}
   phaseTwoPos: {x: 43, y: 118, z: 0}
+  phaseThreePos: {x: 57, y: 80, z: 2}
   player: {fileID: 628497135}
   offset: {x: 0.2, y: 2, z: 0}
   newOffset: {x: 0.2, y: 2, z: 0}
+  finalOffset: {x: 0.28, y: 2, z: 0.02}
 --- !u!4 &983290247 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8981030680548997643, guid: db3dce5cf49fb014983da1445d3eaf2d, type: 3}
@@ -2267,6 +2273,10 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: db3dce5cf49fb014983da1445d3eaf2d, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8591784285093649432, guid: db3dce5cf49fb014983da1445d3eaf2d, type: 3}
+      propertyPath: m_Name
+      value: Bar
       objectReference: {fileID: 0}
     - target: {fileID: -7601226680800833775, guid: db3dce5cf49fb014983da1445d3eaf2d, type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -2867,6 +2877,7 @@ MonoBehaviour:
   phaseOne: 0
   phaseTwo: 0
   newPosition: 0
+  finalPos: 0
   rig: {fileID: 0}
 --- !u!114 &1480706343
 MonoBehaviour:
@@ -3790,7 +3801,7 @@ Transform:
   m_GameObject: {fileID: 2069485088}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.743, y: 2.6647427, z: 2.1627524}
+  m_LocalPosition: {x: 1.86, y: 2.6647427, z: 2.1627524}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

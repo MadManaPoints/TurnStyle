@@ -10,14 +10,17 @@ public class RightArm : MonoBehaviour
     public bool swapToPhone;
     bool inPhone; 
     public bool phoneSwapped;
+    public bool finalPhase;
+    bool inFinalPos;
     //Vector3 phonePosition; 
-    float speed = 1.0f;
+    float speed = 1.2f;
     //[SerializeField] Transform over;
     //[SerializeField] Vector3 armRotation;
     Vector3 offset = new Vector3(0.1f, 0, 0);
     Vector3 newOffset = new Vector3(0.3f, 0, 0);
     [SerializeField] Vector3 pos;
     Vector3 nextPos = new Vector3(1.309181f, 2.5f, 1.409181f);
+    Vector3 finalPos = new Vector3(0,0,0);
     
     void Start()
     {
@@ -38,6 +41,13 @@ public class RightArm : MonoBehaviour
                 } else {
                     Move();
                 }
+            } else if(finalPhase){
+                if(!inFinalPos){
+                    pos = finalPos;
+                    inFinalPos = false;
+                } else {
+                    TurnStylePosition();
+                }
             }
         }
     }
@@ -50,11 +60,11 @@ public class RightArm : MonoBehaviour
         
 
         if(!swapToPhone){
-            Debug.Log(pos.z);
+            //Debug.Log(pos.z);
             SwipePosition(moveX, moveZ);
-        } else {
+        } else if(!finalPhase) {
             HoldingPhone(moveX, moveZ);
-        }
+        } 
         //over.Rotate(new Vector3(0, move, 0) * speed * Time.deltaTime);
     }
 
@@ -93,5 +103,9 @@ public class RightArm : MonoBehaviour
         } else if(pos.z < 1.08f){
             pos.z = 1.08f;
         }
+    }
+
+    void TurnStylePosition(){
+        transform.position = GameObject.Find("Bar").transform.position;
     }
 }
