@@ -11,6 +11,7 @@ public class SceneManager : MonoBehaviour
     RightArm rightArm;
     RotateTurnstile turnstile;
     RightFoot rightFoot;
+    FollowLeg leg;
     InputManager inputs;
     [SerializeField] GameObject phaseOneText;
     [SerializeField] GameObject phaseTwoText;
@@ -44,6 +45,8 @@ public class SceneManager : MonoBehaviour
         turnstile = GameObject.Find("Turn Thing").GetComponent<RotateTurnstile>();
         //should have called it right LEG
         rightFoot = GameObject.Find("Right Foot_target").GetComponent<RightFoot>();
+        //detects the goal
+        leg = GameObject.Find("Leg Collider").GetComponent<FollowLeg>();
         phaseOneText.SetActive(false); 
         phaseTwoText.SetActive(false);
         phaseThreeText.SetActive(false);
@@ -77,7 +80,11 @@ public class SceneManager : MonoBehaviour
             phaseThreeText.SetActive(false);
             //Debug.Log(grab);
             turnstile.moveTurnstile = grab;
-            rightFoot.canMoveLeg = moveLeg; 
+            if(grab){
+                rightFoot.canMoveLeg = moveLeg;
+            }
+            player.end = leg.screwTheMTA;
+            playerCam.endCamPos = player.end;
         }
 
         //Debug.Log(grab);

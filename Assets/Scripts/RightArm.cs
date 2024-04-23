@@ -114,6 +114,6 @@ public class RightArm : MonoBehaviour
 
     void TurnStylePosition(){
         transform.position = bar.position + barOffset;
-        Debug.Log("YERR");
+        //Debug.Log("YERR");
     }
 }

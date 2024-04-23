@@ -5,6 +5,7 @@ using UnityEngine;
 public class FollowLeg : MonoBehaviour
 {   
     [SerializeField] Transform leg;
+    public bool screwTheMTA; 
     void Start()
     {
         
@@ -12,7 +13,12 @@ public class FollowLeg : MonoBehaviour
 
     void Update()
     {
-        this.transform.position = new Vector3(leg.position.x, 2f, leg.position.z); 
-        this.transform.localEulerAngles = leg.transform.localEulerAngles;
+        this.transform.position = new Vector3(leg.position.x + 0.1f, leg.position.y - 0.1f, leg.position.z); 
+    }
+
+    void OnTriggerEnter(Collider col){
+        if(col.gameObject.tag == "End"){
+            screwTheMTA = true; 
+        }
     }
 }

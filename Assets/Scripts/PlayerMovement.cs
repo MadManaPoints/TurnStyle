@@ -21,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     public bool phaseThree;
     public bool newPosition; 
     public bool finalPos;
+    public bool end;
     bool finalPosStop;
     bool newPosStop;
     public RigBuilder rig;
@@ -55,7 +56,12 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if(finalPosStop){
-            MovePlayerForward();
+            if(!end){
+                MovePlayerForward();
+            } else {
+                Win();
+            }
+            
         }
 
         SetAnim();
@@ -89,6 +95,14 @@ public class PlayerMovement : MonoBehaviour
         pos = new Vector3(moveX, pos.y, moveZ);
     }
 
+    void Win(){
+        playerRb.AddForce(Vector3.right * speed * Time.deltaTime); 
+
+        if(playerRb.velocity.magnitude > maxSpeed){
+            playerRb.velocity = Vector3.ClampMagnitude(playerRb.velocity, maxSpeed); 
+        }
+    }
+
     void SetAnim(){
         if(phaseOne){
             anim.SetBool("Phase 1", true);
@@ -106,6 +120,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void LockMouse(){
+        //doesn't work in fullscreen but it DOES work 
         if(Cursor.visible == false && Input.GetKeyDown(esc)){
             Cursor.lockState = CursorLockMode.Locked; 
             Cursor.visible = true;

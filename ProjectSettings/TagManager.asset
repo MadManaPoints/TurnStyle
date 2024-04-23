@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ground
   - Turnstile
+  - End
   layers:
   - Default
   - TransparentFX
