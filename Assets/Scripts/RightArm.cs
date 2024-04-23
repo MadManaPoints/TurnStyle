@@ -21,35 +21,42 @@ public class RightArm : MonoBehaviour
     [SerializeField] Vector3 pos;
     Vector3 nextPos = new Vector3(1.309181f, 2.5f, 1.409181f);
     Vector3 finalPos = new Vector3(0,0,0);
+    [SerializeField] Transform bar;
+    [SerializeField] Vector3 barOffset; 
     
     void Start()
     {
 
     }
 
+    void Update(){
+        if(finalPhase && inFinalPos){
+            TurnStylePosition();
+        }
+    }
+
     void LateUpdate()
     {
         //Debug.Log(canMoveArm);
         if(canMoveArm){
-            if(!swapToPhone){
+            if(!swapToPhone && !finalPhase){
                 Move();
+            } else if(finalPhase){
+                if(!inFinalPos){
+                    pos = finalPos;
+                    inFinalPos = true;
+                }
             } else if(swapToPhone){
-                //Debug.Log(swapToPhone);
                 if(!inPhone){
                     pos = nextPos;
                     inPhone = true;
                 } else {
                     Move();
                 }
-            } else if(finalPhase){
-                if(!inFinalPos){
-                    pos = finalPos;
-                    inFinalPos = false;
-                } else {
-                    TurnStylePosition();
-                }
             }
         }
+
+        //Debug.Log(swapToPhone);
     }
 
     void Move(){
@@ -106,6 +113,7 @@ public class RightArm : MonoBehaviour
     }
 
     void TurnStylePosition(){
-        transform.position = GameObject.Find("Bar").transform.position;
+        transform.position = bar.position + barOffset;
+        Debug.Log("YERR");
     }
 }

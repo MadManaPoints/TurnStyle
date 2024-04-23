@@ -10,6 +10,7 @@ public class RotateTurnstile : MonoBehaviour
     public bool moveTurnstile;
     public bool stuck; 
     public float rotateSpeed = 3.0f;
+    static float t = 0.0f;
     Transform startPos;
     [SerializeField] float stopTurnstile;
     void Start()
@@ -29,11 +30,12 @@ public class RotateTurnstile : MonoBehaviour
     void SpinTurnstile(){
         float moveY = Input.GetAxis("Mouse Y") * (1.0f + Time.deltaTime);
 
-        float rotateZ = map(moveY, -1, 1, -90, 90);
+        float rotateZ = map(moveY, -1, 1, -60, 60);
         rotateZ = Mathf.Min(rotateZ, stopTurnstile);
-        float rotateTurnstile = Mathf.Lerp(startPos.localEulerAngles.z, rotateZ, 0.5f);
+        float rotateTurnstile = Mathf.Lerp(startPos.localEulerAngles.z, rotateZ, t);
         startPos.localEulerAngles = new Vector3(startPos.localEulerAngles.x, startPos.localEulerAngles.y, -rotateTurnstile);
-        Debug.Log(moveY);
+        //Debug.Log(moveY);
+        t += 0.5f * Time.deltaTime;
     }
 
     float map(float value, float minA, float maxA, float minB, float maxB){
