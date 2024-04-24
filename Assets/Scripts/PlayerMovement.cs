@@ -12,6 +12,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float maxSpeed;
     Vector3 moveDirection;
     Vector3 pos;
+    Vector3 stepBack;
+    Vector3 changePos;
+    Vector3 changeRotation;
     Animator anim;
     RotateTurnstile turnstile;
     public KeyCode esc = KeyCode.Escape;
@@ -22,9 +25,11 @@ public class PlayerMovement : MonoBehaviour
     public bool newPosition; 
     public bool finalPos;
     public bool end;
+    bool setFinalPos; 
     bool finalPosStop;
     bool newPosStop;
     public RigBuilder rig;
+    Vector3 velocity = Vector3.zero;
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
@@ -43,16 +48,41 @@ public class PlayerMovement : MonoBehaviour
             MovePlayer();
         }
 
-        if(newPosition && !newPosStop){
-            transform.position = new Vector3(transform.position.x - 0.4f, transform.position.y, transform.position.z);
-            newPosStop = true;
+        if(newPosition){
+            if(!newPosStop){
+                //for now will use damp to change position - it's at least better than snapping
+               stepBack = new Vector3(transform.position.x - 0.38f, transform.position.y, transform.position.z);
+               newPosStop = true;
+            } else {
+                transform.position = Vector3.SmoothDamp(transform.position, stepBack, ref velocity, 0.7f);
+            }
+            
+            //newPosStop = true;
         }
 
-        if(finalPos && !finalPosStop){
-            transform.position = new Vector3(1.4f, transform.position.y, 2.010f);
-            transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, 5.8f, transform.localEulerAngles.z);
-            pos = transform.position;
-            finalPosStop = true;
+        //Debug.Log(newPosition);
+
+        if(finalPos){
+            newPosition = false;
+            if(!setFinalPos){
+                changePos = new Vector3(1.4f, transform.position.y, 2.010f);
+                changeRotation = new Vector3(transform.localEulerAngles.x, 5.8f, transform.localEulerAngles.z);
+                setFinalPos = true;
+            } else {
+                transform.position = Vector3.SmoothDamp(transform.position, changePos, ref velocity, 0.8f);
+                if(transform.localEulerAngles.y > 5.8f){
+                    transform.localEulerAngles -= new Vector3(0, 150.0f * Time.deltaTime, 0);
+                } else {
+                    transform.localEulerAngles = changeRotation;
+                }
+                //Debug.Log(transform.localEulerAngles.y);
+            }
+
+            if(transform.position == changePos){
+                //transform.localEulerAngles = changeRotation;
+                finalPosStop = true;
+                finalPos = false; 
+            } 
         }
 
         if(finalPosStop){
