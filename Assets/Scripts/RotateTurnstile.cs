@@ -28,14 +28,23 @@ public class RotateTurnstile : MonoBehaviour
     }
 
     void SpinTurnstile(){
+        float moveY = Input.GetAxis("Mouse Y") * (0.25f + Time.deltaTime);
+
+        float rotateZ = map(moveY, -1, 1, -60*3, 60*3);
+        rotateZ = Mathf.Min(rotateZ, stopTurnstile);
+        float rotateTurnstile = Mathf.Lerp(startPos.localEulerAngles.z, rotateZ, t);
+        t += 0.5f * Time.deltaTime;
+        startPos.localEulerAngles = new Vector3(startPos.localEulerAngles.x, startPos.localEulerAngles.y, -rotateTurnstile);
+        //Debug.Log(moveY);
+    }
+
+    void SpinTurnstileForce(){
         float moveY = Input.GetAxis("Mouse Y") * (1.0f + Time.deltaTime);
 
         float rotateZ = map(moveY, -1, 1, -60, 60);
         rotateZ = Mathf.Min(rotateZ, stopTurnstile);
-        float rotateTurnstile = Mathf.Lerp(startPos.localEulerAngles.z, rotateZ, t);
-        startPos.localEulerAngles = new Vector3(startPos.localEulerAngles.x, startPos.localEulerAngles.y, -rotateTurnstile);
-        //Debug.Log(moveY);
-        t += 0.5f * Time.deltaTime;
+
+        
     }
 
     float map(float value, float minA, float maxA, float minB, float maxB){

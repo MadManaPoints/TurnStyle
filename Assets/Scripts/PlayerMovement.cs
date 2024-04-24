@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
 {
     Rigidbody playerRb;
     float vInput;
+    [SerializeField] float torque; 
     //float tempSpeed = -200.0f; 
     [SerializeField] float speed;
     [SerializeField] float maxSpeed;
@@ -27,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
     public bool end;
     bool setFinalPos; 
     bool finalPosStop;
+    bool allowFinalMovement; 
     bool newPosStop;
     public RigBuilder rig;
     Vector3 velocity = Vector3.zero;
@@ -62,36 +64,40 @@ public class PlayerMovement : MonoBehaviour
 
         //Debug.Log(newPosition);
 
-        if(finalPos){
+        if(finalPos && !allowFinalMovement){
             newPosition = false;
             if(!setFinalPos){
                 changePos = new Vector3(1.4f, transform.position.y, 2.010f);
                 changeRotation = new Vector3(transform.localEulerAngles.x, 5.8f, transform.localEulerAngles.z);
                 setFinalPos = true;
             } else {
-                transform.position = Vector3.SmoothDamp(transform.position, changePos, ref velocity, 0.8f);
-                if(transform.localEulerAngles.y > 5.8f){
-                    transform.localEulerAngles -= new Vector3(0, 150.0f * Time.deltaTime, 0);
+                //player clips through the ground for some reason when translating 
+                //using force instead
+                Vector3 direction = (changePos - transform.position).normalized;
+                if(Vector3.Distance(transform.position, changePos) > 0.2f){
+                    playerRb.AddForce(direction * (speed * 0.5f) * Time.deltaTime);
                 } else {
-                    transform.localEulerAngles = changeRotation;
+                    playerRb.velocity = Vector3.zero;
+                }
+
+                //turn player
+                if(transform.localEulerAngles.y > 5.8f){
+                    playerRb.AddTorque(Vector3.up * -torque * Time.deltaTime, ForceMode.Impulse);
+                } else {
+                    pos = transform.position;
+                    finalPosStop = true;
                 }
                 //Debug.Log(transform.localEulerAngles.y);
             }
-
-            if(transform.position == changePos){
-                //transform.localEulerAngles = changeRotation;
-                finalPosStop = true;
-                finalPos = false; 
-            } 
         }
 
         if(finalPosStop){
             if(!end){
+                allowFinalMovement = true;
                 MovePlayerForward();
             } else {
                 Win();
             }
-            
         }
 
         SetAnim();

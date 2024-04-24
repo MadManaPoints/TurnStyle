@@ -72,7 +72,7 @@ public class PlayerCam : MonoBehaviour
 
     void PhaseThreeCamPos(){
         transform.position = player.transform.position + finalOffset;
-        transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, phaseThreePos, ref velocity, 0.3f);
+        transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, phaseThreePos, ref velocity, 0.5f);
     }
 
     void EndCam(){
