@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
@@ -30,6 +31,8 @@ public class PlayerMovement : MonoBehaviour
     bool finalPosStop;
     bool allowFinalMovement; 
     bool newPosStop;
+    bool setFollow;
+    [SerializeField] Transform follow; 
     public RigBuilder rig;
     Vector3 velocity = Vector3.zero;
     void Start()
@@ -53,8 +56,9 @@ public class PlayerMovement : MonoBehaviour
         if(newPosition){
             if(!newPosStop){
                 //for now will use damp to change position - it's at least better than snapping
-               stepBack = new Vector3(transform.position.x - 0.38f, transform.position.y, transform.position.z);
-               newPosStop = true;
+                playerRb.constraints = ~RigidbodyConstraints.FreezeRotationY;
+                stepBack = new Vector3(transform.position.x - 0.38f, transform.position.y, transform.position.z);
+                newPosStop = true;
             } else {
                 transform.position = Vector3.SmoothDamp(transform.position, stepBack, ref velocity, 0.7f);
             }
@@ -104,9 +108,18 @@ public class PlayerMovement : MonoBehaviour
         LockMouse();
     }
 
+    void FixedUpdate(){
+        if(finalPosStop){
+            if(!end){
+                PushPlayer();
+            }
+        }
+    }
+
     void MovePlayer(){
         //hInput = Input.GetAxisRaw("Horizontal"); 
         vInput = Input.GetAxisRaw("Vertical");
+        playerRb.freezeRotation = true; 
 
         moveDirection = transform.forward * vInput;  //+ transform.right * hInput;
 
@@ -115,20 +128,37 @@ public class PlayerMovement : MonoBehaviour
         if(playerRb.velocity.magnitude > maxSpeed){
             playerRb.velocity = Vector3.ClampMagnitude(playerRb.velocity, maxSpeed); 
         }
+        
+
     }
 
     void MovePlayerForward(){
+        playerRb.constraints = RigidbodyConstraints.FreezeRotation;
         //to move past the turnstile
-        transform.position = pos;
-        float hInput = Input.GetAxis("Horizontal") * (1.0f + Time.deltaTime);
-        vInput = Input.GetAxis("Vertical") * (1.0f + Time.deltaTime);
+        if(!setFollow){
+            follow.position = transform.position;
+            setFollow = true;
+        } else {
+            //transform.position = pos;
+            float hInput = Input.GetAxis("Horizontal") * (1.0f + Time.deltaTime);
+            vInput = Input.GetAxis("Vertical") * (1.0f + Time.deltaTime);
 
-        float moveX = map(vInput, -1, 1, 0f, 2.0f);
-        moveX = Mathf.Max(moveX, 1.2f);
+            float moveX = map(vInput, -1, 1, 0f, 2.0f);
+            moveX = Mathf.Max(moveX, 1.2f);
 
-        float moveZ = map(-hInput, -1, 1, 2.0f, 2.2f);
-        moveZ = Mathf.Max(moveZ, 2.010f);
-        pos = new Vector3(moveX, pos.y, moveZ);
+            float moveZ = map(-hInput, -1, 1, 2.0f, 2.2f);
+            moveZ = Mathf.Max(moveZ, 2.010f);
+            follow.position = new Vector3(moveX, follow.position.y, moveZ);
+        }
+    }
+
+    void PushPlayer(){
+        if(Vector3.Distance(transform.position, follow.position) > 0.2f){
+            Vector3 move = follow.position - transform.position;
+            playerRb.velocity = move * 10.0f * velocity.magnitude; 
+        } else {
+            playerRb.velocity = Vector3.zero; 
+        }
     }
 
     void Win(){
