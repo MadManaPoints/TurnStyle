@@ -82,6 +82,7 @@ public class SceneManager : MonoBehaviour
             turnstile.moveTurnstile = grab;
             if(grab){
                 rightFoot.canMoveLeg = moveLeg;
+                player.movingLeg = moveLeg;
             }
             player.end = leg.screwTheMTA;
             playerCam.endCamPos = player.end;

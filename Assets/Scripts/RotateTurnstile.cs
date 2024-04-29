@@ -51,6 +51,7 @@ public class RotateTurnstile : MonoBehaviour
         if(moveTurnstile){
             SpinTurnstile(); 
         }
+        PositionCheck();
     }
 
     void FixedUpdate(){
@@ -96,32 +97,7 @@ public class RotateTurnstile : MonoBehaviour
         }
 
         //returning to this later
-
-        if(!grabSwitch){
-                if(transform.localEulerAngles.z < 142.0f){
-                    index -= 1;
-                    canMove = false; 
-                    rb.angularVelocity = Vector3.zero;
-                    grabSwitch = true;
-                }
-
-        } else {
-            //transform.localEulerAngles = barPositions[index];
-            transform.localEulerAngles -= new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, 3.0f);
-        }
-
-        if(transform.localEulerAngles.z > 142 && transform.localEulerAngles.z < 218 & !grabSwitch){
-            canMove = true; 
-        } else {
-            grabSwitch = true;
-            canMove = false;
-            rb.angularVelocity = Vector3.zero;
-            transform.rotation = Quaternion.Slerp(transform.rotation, initialPos, 0.5f);
-
-            if(grabSwitch && transform.localEulerAngles.z > 178 && transform.localEulerAngles.z < 182){
-                grabSwitch = false;
-            }
-        }
+        //Debug.Log(index); 
     }
 
     float map(float value, float minA, float maxA, float minB, float maxB){
@@ -131,5 +107,11 @@ public class RotateTurnstile : MonoBehaviour
         float newRange = maxB - minB;
         
         return valuePercent * newRange + minB;
+    }
+
+    void OnCollisionEnter(Collision col){
+        if(col.gameObject.tag == "Player"){
+            Debug.Log("YERR");
+        }
     }
 }

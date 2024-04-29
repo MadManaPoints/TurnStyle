@@ -26,7 +26,7 @@ public class PlayerCam : MonoBehaviour
     
     void Start()
     {
-        
+        transform.localEulerAngles = new Vector3(0, 90f, 0);
     }
 
     void Update()
@@ -45,6 +45,7 @@ public class PlayerCam : MonoBehaviour
     }
 
     void CameraControls(){
+        transform.localEulerAngles = new Vector3(0, 90, 0);
         transform.position = player.transform.position + offset;
         float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensitivity;
         float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensitivity;
@@ -53,8 +54,10 @@ public class PlayerCam : MonoBehaviour
         xRotation -= mouseY;
 
         //Ensures the player can't look 360 degrees up and down
-        xRotation = Mathf.Clamp(xRotation, -stopX, 55);
-        yRotation = Mathf.Clamp(yRotation, 30, 150);
+        //limiting movement further until I can figure out why the camera spins when looking too far up
+        xRotation = Mathf.Clamp(xRotation, -15, 20.5f);
+        yRotation = Mathf.Clamp(yRotation, 40, 150);
+        //Debug.Log(transform.localEulerAngles);
 
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
         //orientation.rotation = Quaternion.Euler(0, yRotation, 0);

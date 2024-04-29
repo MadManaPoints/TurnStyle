@@ -7,6 +7,7 @@ using UnityEngine.Animations.Rigging;
 public class PlayerMovement : MonoBehaviour
 {
     Rigidbody playerRb;
+    float hInput;
     float vInput;
     [SerializeField] float torque; 
     //float tempSpeed = -200.0f; 
@@ -26,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
     public bool phaseThree;
     public bool newPosition; 
     public bool finalPos;
+    public bool movingLeg;
     public bool end;
     bool setFinalPos; 
     bool finalPosStop;
@@ -35,6 +37,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform follow; 
     public RigBuilder rig;
     Vector3 velocity = Vector3.zero;
+    static float tZ = 0.0f;
+    static float tX = 0.0f;
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
@@ -57,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
             if(!newPosStop){
                 //for now will use damp to change position - it's at least better than snapping
                 playerRb.constraints = ~RigidbodyConstraints.FreezeRotationY;
-                stepBack = new Vector3(transform.position.x - 0.38f, transform.position.y, transform.position.z);
+                stepBack = new Vector3(transform.position.x - 0.28f, transform.position.y, transform.position.z);
                 newPosStop = true;
             } else {
                 transform.position = Vector3.SmoothDamp(transform.position, stepBack, ref velocity, 0.7f);
@@ -71,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
         if(finalPos && !allowFinalMovement){
             newPosition = false;
             if(!setFinalPos){
-                changePos = new Vector3(1.4f, transform.position.y, 2.010f);
+                changePos = new Vector3(1.9f, transform.position.y, 2.1f);
                 changeRotation = new Vector3(transform.localEulerAngles.x, 5.8f, transform.localEulerAngles.z);
                 setFinalPos = true;
             } else {
@@ -79,7 +83,7 @@ public class PlayerMovement : MonoBehaviour
                 //using force instead
                 Vector3 direction = (changePos - transform.position).normalized;
                 if(Vector3.Distance(transform.position, changePos) > 0.2f){
-                    playerRb.AddForce(direction * (speed * 0.5f) * Time.deltaTime);
+                    playerRb.AddForce(direction * speed * Time.deltaTime);
                 } else {
                     playerRb.velocity = Vector3.zero;
                 }
@@ -98,7 +102,9 @@ public class PlayerMovement : MonoBehaviour
         if(finalPosStop){
             if(!end){
                 allowFinalMovement = true;
-                MovePlayerForward();
+                if(movingLeg){
+                    MovePlayerForward();
+                }
             } else {
                 Win();
             }
@@ -123,13 +129,13 @@ public class PlayerMovement : MonoBehaviour
 
         moveDirection = transform.forward * vInput;  //+ transform.right * hInput;
 
-        playerRb.AddForce(moveDirection.normalized * speed * Time.deltaTime); 
+        if(vInput > 0){
+            playerRb.AddForce(moveDirection.normalized * speed * Time.deltaTime); 
 
-        if(playerRb.velocity.magnitude > maxSpeed){
-            playerRb.velocity = Vector3.ClampMagnitude(playerRb.velocity, maxSpeed); 
+            if(playerRb.velocity.magnitude > maxSpeed){
+                playerRb.velocity = Vector3.ClampMagnitude(playerRb.velocity, maxSpeed); 
+            }
         }
-        
-
     }
 
     void MovePlayerForward(){
@@ -139,21 +145,25 @@ public class PlayerMovement : MonoBehaviour
             follow.position = transform.position;
             setFollow = true;
         } else {
-            //transform.position = pos;
-            float hInput = Input.GetAxis("Horizontal") * (1.0f + Time.deltaTime);
+            hInput = Input.GetAxis("Horizontal") * (1.0f + Time.deltaTime);
             vInput = Input.GetAxis("Vertical") * (1.0f + Time.deltaTime);
 
             float moveX = map(vInput, -1, 1, 0f, 2.0f);
             moveX = Mathf.Max(moveX, 1.2f);
+            float moveH = Mathf.Lerp(follow.position.x, moveX, tX);
+            tX += 0.5f * Time.deltaTime;
 
-            float moveZ = map(-hInput, -1, 1, 2.0f, 2.2f);
-            moveZ = Mathf.Max(moveZ, 2.010f);
-            follow.position = new Vector3(moveX, follow.position.y, moveZ);
+            float moveZ = map(-hInput, -1, 1, 1.2f, 2.4f);
+            moveZ = Mathf.Max(moveZ, 1.9f);
+            float moveV = Mathf.Lerp(follow.position.z, moveZ, tZ);
+            tZ += 0.5f * Time.deltaTime;
+
+            follow.position = new Vector3(moveH, follow.position.y, moveV);
         }
     }
 
     void PushPlayer(){
-        if(Vector3.Distance(transform.position, follow.position) > 0.2f){
+        if(Vector3.Distance(transform.position, follow.position) > 0.002f){
             Vector3 move = follow.position - transform.position;
             playerRb.velocity = move * 10.0f * velocity.magnitude; 
         } else {
