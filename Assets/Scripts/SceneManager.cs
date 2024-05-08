@@ -30,9 +30,9 @@ public class SceneManager : MonoBehaviour
         //action map > action > .started || .performed || .canceled
         //Lambda expressions are kind of like mini functions
             //works by inserting a parameter on the left
-        inputs.Player.Phase1.performed += ctx => StartPhaseOne();
-        inputs.Player.Phase2.performed += ctx => StartPhaseTwo();
-        inputs.Player.Phase3.performed += ctx => StartPhaseThree();
+        //inputs.Player.Phase1.performed += ctx => StartPhaseOne();
+        //inputs.Player.Phase2.performed += ctx => StartPhaseTwo();
+        //inputs.Player.Phase3.performed += ctx => StartPhaseThree();
     }
 
     void Start()
@@ -53,9 +53,16 @@ public class SceneManager : MonoBehaviour
     }
 
     void Update(){
-        grab = inputs.Player.Grab.IsInProgress();
-        moveLeg = inputs.Player.MoveLeg.IsInProgress();
-        moveForward = inputs.Player.MoveForward.IsInProgress();
+        //grab = inputs.Player.Grab.IsInProgress();
+        if(Input.GetAxisRaw("Grab") > 0){
+            grab = true;
+        } else {
+            grab = false;
+        }
+        //Debug.Log(moveLeg);
+        //moveLeg = inputs.Player.MoveLeg.IsInProgress();
+        moveLeg = Input.GetButton("Move Leg");
+        Phases();
 
         if(rightArm.swiped){
                 phaseTwoText.SetActive(true);
@@ -91,6 +98,20 @@ public class SceneManager : MonoBehaviour
         //Debug.Log(grab);
     }
 
+    void Phases(){
+        if(Input.GetButtonDown("Phase 1")){
+            StartPhaseOne();
+        }
+
+        if(Input.GetButtonDown("Phase 2")){
+            StartPhaseTwo();
+        }
+
+        if(Input.GetButtonDown("Phase 3")){
+            StartPhaseThree();
+        }
+    }
+
     void StartPhaseOne(){
         if(player.stopAtTurnstile && !playerCam.nextPos){
             player.phaseOne = true;
@@ -117,11 +138,11 @@ public class SceneManager : MonoBehaviour
     }
 
     void OnEnable(){
-        inputs.Player.Enable(); 
+        inputs.Player.Enable();
     }
 
     void OnDisable(){
-        inputs.Player.Disable(); 
+        inputs.Player.Disable();
     }
 
     void OnTriggerEnter(Collider col){

@@ -6,6 +6,8 @@ using UnityEngine;
 public class RotateTurnstile : MonoBehaviour
 {
     RightArm rightArm;
+    Score score;
+    bool touching;
     //public float x, y, z; //this was to test rotation - use z to move new turnstile 
     public bool moveTurnstile;
     public bool stuck;
@@ -13,14 +15,14 @@ public class RotateTurnstile : MonoBehaviour
     bool [] positionSwitch = new bool [6]; 
     public float rotateSpeed = 3.0f;
     static float t = 0.0f;
-    int index = 3;
+    int index = 1;
     Vector3 velocity = Vector3.zero;
     Transform startPos;
     Quaternion initialPos;
     [SerializeField] float stopTurnstile;
     Vector3 rotateVel = Vector3.zero; 
     Vector3 rotateAcc;
-    [SerializeField] Vector3 [] barPositions = new Vector3[6];
+    [SerializeField] Vector3 [] barPositions = new Vector3[3];
     bool canMove = true;
     [SerializeField] Transform follow; 
     Rigidbody rb;
@@ -28,6 +30,7 @@ public class RotateTurnstile : MonoBehaviour
     void Start()
     {
         rightArm = GameObject.Find("Right Hand_target").GetComponent<RightArm>();
+        score = GameObject.Find("Score").GetComponent<Score>();
         //startPos = this.transform;
         //startPos.localEulerAngles = transform.localEulerAngles;
         //initialPos = this.transform.rotation;
@@ -36,10 +39,10 @@ public class RotateTurnstile : MonoBehaviour
         
         //makes Vector3 for each position it can stop at 
         for(int i = 0; i < barPositions.Length; i++){
-            barPositions[i] = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, 60 * i); 
+            barPositions[i] = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, 120 * i); 
         }
 
-        barPositions[0] = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, 360.0f);
+        //barPositions[0] = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, 360.0f);
         transform.localEulerAngles = barPositions[index];
         follow.localEulerAngles = barPositions[index];
         //startPos.localEulerAngles = follow.localEulerAngles; 
@@ -48,10 +51,15 @@ public class RotateTurnstile : MonoBehaviour
 
     void Update()
     {
+        //Debug.Log(barPositions[index]);
         if(moveTurnstile){
-            SpinTurnstile(); 
+            SpinTurnstile();
         }
         PositionCheck();
+
+        if(touching){
+            score.SubtractScore();
+        }
     }
 
     void FixedUpdate(){
@@ -111,7 +119,14 @@ public class RotateTurnstile : MonoBehaviour
 
     void OnCollisionEnter(Collision col){
         if(col.gameObject.tag == "Player"){
-            Debug.Log("YERR");
+            touching = true;
+            Debug.Log(score.score);
+        }
+    }
+
+    void OnCollisionExit(Collision col){
+        if(col.gameObject.tag == "Player"){
+            touching = false;
         }
     }
 }
