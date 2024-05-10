@@ -37,6 +37,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform follow; 
     public RigBuilder rig;
     Vector3 velocity = Vector3.zero;
+    static float t = 0.0f;
     static float tZ = 0.0f;
     static float tX = 0.0f;
     void Start()
@@ -61,10 +62,11 @@ public class PlayerMovement : MonoBehaviour
             if(!newPosStop){
                 //for now will use damp to change position - it's at least better than snapping
                 playerRb.constraints = ~RigidbodyConstraints.FreezeRotationY;
-                stepBack = new Vector3(transform.position.x - 0.28f, transform.position.y, transform.position.z);
+                stepBack = new Vector3(transform.position.x - 0.18f, transform.position.y, transform.position.z);
                 newPosStop = true;
             } else {
-                transform.position = Vector3.SmoothDamp(transform.position, stepBack, ref velocity, 0.7f);
+                transform.position = Vector3.Lerp(transform.position, stepBack, t);
+                t += 0.25f * Time.deltaTime;
             }
             
             //newPosStop = true;
@@ -82,7 +84,7 @@ public class PlayerMovement : MonoBehaviour
                 //player clips through the ground for some reason when translating 
                 //using force instead
                 Vector3 direction = (changePos - transform.position).normalized;
-                if(Vector3.Distance(transform.position, changePos) > 0.2f){
+                if(Vector3.Distance(transform.position, changePos) > 0.1f){
                     playerRb.AddForce(direction * speed * Time.deltaTime);
                 } else {
                     playerRb.velocity = Vector3.zero;
@@ -157,6 +159,7 @@ public class PlayerMovement : MonoBehaviour
             moveZ = Mathf.Max(moveZ, 1.9f);
             float moveV = Mathf.Lerp(follow.position.z, moveZ, tZ);
             tZ += 0.5f * Time.deltaTime;
+            Debug.Log(transform.position.z);
 
             follow.position = new Vector3(moveH, follow.position.y, moveV);
         }
