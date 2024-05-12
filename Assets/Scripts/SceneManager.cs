@@ -19,6 +19,7 @@ public class SceneManager : MonoBehaviour
     bool grab;
     bool moveLeg;
     bool moveForward;
+    public bool scanError;
     
     //this is for when I change text in code - for now I'm just disabling the gameObject
     //string phanseOneText = "Press X to Swipe MetroCard";
@@ -64,11 +65,10 @@ public class SceneManager : MonoBehaviour
         moveLeg = Input.GetButton("Move Leg");
         Phases();
 
-        if(rightArm.swiped){
+        if(rightArm.swipes >= 3 && rightArm.swiped){
                 phaseTwoText.SetActive(true);
             }
-
-         if(rightArm.pressedY && player){
+         if(rightArm.pressedY){
             player.phaseTwo = true;
             phaseTwoText.SetActive(false);
             player.phaseOne = false;
@@ -80,6 +80,9 @@ public class SceneManager : MonoBehaviour
 
         if(rightArm.phoneSwapped && !player.finalPos){
             player.newPosition = true;
+        }
+
+        if(player.newPosition && scanError){
             phaseThreeText.SetActive(true);
         }
 
@@ -123,13 +126,13 @@ public class SceneManager : MonoBehaviour
     }
 
     void StartPhaseTwo(){
-        if(rightArm.swiped){
+        if(rightArm.swipes >= 3){
             rightArm.pressedY = true;
         }
     }
 
     void StartPhaseThree(){
-        if(player.newPosition){
+        if(player.newPosition && scanError){
             //Debug.Log("THAT'S IT FOR NOW");
             player.finalPos = true;
             rightArm.finalPhase = true;

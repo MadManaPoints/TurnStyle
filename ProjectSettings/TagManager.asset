@@ -8,6 +8,9 @@ TagManager:
   - Turnstile
   - End
   - Foot
+  - Train Pass
+  - Phone
+  - Scanner
   layers:
   - Default
   - TransparentFX

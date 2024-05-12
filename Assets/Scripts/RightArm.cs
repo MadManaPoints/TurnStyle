@@ -11,6 +11,9 @@ public class RightArm : MonoBehaviour
     bool inPhone; 
     public bool phoneSwapped;
     public bool finalPhase;
+    bool swipe; 
+    public int swipes = 0;
+    bool yPos;
     bool inFinalPos;
     //Vector3 phonePosition; 
     float speed = 1.2f;
@@ -30,6 +33,7 @@ public class RightArm : MonoBehaviour
     }
 
     void Update(){
+        Debug.Log(swipes);
         if(finalPhase && inFinalPos){
             TurnStylePosition();
         }
@@ -76,22 +80,50 @@ public class RightArm : MonoBehaviour
     }
 
     void SwipePosition(float tempX, float tempZ){
-        transform.position = pos + offset;
-        pos.y = 2.5f;
-        pos += new Vector3(tempX * speed * Time.deltaTime, 0, -tempZ * speed * Time.deltaTime);
+        if(!yPos){
+            pos.y = 2.5f;
+            yPos = true;
+        } else {
+            transform.position = pos + offset;
+            pos += new Vector3(tempX * speed * Time.deltaTime, 0, 0);//-tempZ * speed * Time.deltaTime);
 
-        if(pos.x > 2.0f){
-            pos.x = 2.0f;
-            swiped = true;
-        } else if(pos.x < 1.6f){
-            pos.x = 1.6f;
-        }
+            if(pos.x > 1.9f){
+                pos.x = 1.9f;
+                swiped = true;
+            } else if(pos.x < 1.4f){
+            pos.x = 1.4f;
+            }
 
-        if(pos.z > 1.8f){
-            pos.z = 1.8f;
-        } else if (pos.z < 1.0f){
-            pos.z = 1.0f;
+        //if(pos.z > 1.7f){
+        //    pos.z = 1.7f;
+        //} else if (pos.z < 1.2f){
+        //    pos.z = 1.2f;
+        //}
+            pos.z = 1.37341f;
+
+            if(pos.x > 1.75f){
+                //Debug.Log("YERR");
+                if(pos.y < 2.58f && tempX != 0){
+                    pos.y += Time.deltaTime/2;
+                } else {
+                    if(!swipe){
+                        swipes += 1;
+                        swipe = true;
+                    } else {
+                        pos.y = 2.58f;
+                    } 
+                }
+            } else if(pos.x < 1.5f && tempX != 0){
+                if(pos.y > 2.5f){
+                    swipe = false;
+                    pos.y -= Time.deltaTime/4;
+                } else {
+                    pos.y = 2.5f;
+                }
+            }
         }
+        
+        
     }
 
     void HoldingPhone(float tempY, float tempZ){

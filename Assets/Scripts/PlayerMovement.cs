@@ -7,6 +7,7 @@ using UnityEngine.Animations.Rigging;
 public class PlayerMovement : MonoBehaviour
 {
     Rigidbody playerRb;
+    [SerializeField] GameObject trainPass, phone;
     float hInput;
     float vInput;
     [SerializeField] float torque; 
@@ -29,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     public bool finalPos;
     public bool movingLeg;
     public bool end;
+    bool stepUp;
     bool setFinalPos; 
     bool finalPosStop;
     bool allowFinalMovement; 
@@ -48,6 +50,8 @@ public class PlayerMovement : MonoBehaviour
 
         //not using this anymore but I'll keep for now
         rig = GetComponent<RigBuilder>();
+
+        phone.SetActive(false);
     }
 
     void Update()
@@ -56,6 +60,12 @@ public class PlayerMovement : MonoBehaviour
         //Debug.Log(playerRb.velocity.magnitude);
         if(!stopAtTurnstile){
             MovePlayer();
+        } else if(!newPosition){
+            if(!stepUp){
+                transform.position = new Vector3(transform.position.x + 0.20f, transform.position.y, transform.position.z);
+                stepUp = true;
+            }
+            playerRb.isKinematic = true;
         }
 
         if(newPosition){
@@ -63,6 +73,8 @@ public class PlayerMovement : MonoBehaviour
                 //for now will use damp to change position - it's at least better than snapping
                 playerRb.constraints = ~RigidbodyConstraints.FreezeRotationY;
                 stepBack = new Vector3(transform.position.x - 0.18f, transform.position.y, transform.position.z);
+                trainPass.SetActive(false);
+                phone.SetActive(true);
                 newPosStop = true;
             } else {
                 transform.position = Vector3.Lerp(transform.position, stepBack, t);
@@ -79,6 +91,7 @@ public class PlayerMovement : MonoBehaviour
             if(!setFinalPos){
                 changePos = new Vector3(1.9f, transform.position.y, 2.1f);
                 changeRotation = new Vector3(transform.localEulerAngles.x, 5.8f, transform.localEulerAngles.z);
+                phone.SetActive(false);
                 setFinalPos = true;
             } else {
                 //player clips through the ground for some reason when translating 
