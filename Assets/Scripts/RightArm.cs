@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using TMPro;
 public class RightArm : MonoBehaviour
 {
     public bool canMoveArm;
@@ -26,14 +27,16 @@ public class RightArm : MonoBehaviour
     Vector3 finalPos = new Vector3(0,0,0);
     [SerializeField] Transform bar;
     [SerializeField] Vector3 barOffset; 
+    [SerializeField] GameObject funds;
+    [SerializeField] TextMeshProUGUI fundsText;
     
     void Start()
     {
-
+        funds.SetActive(false);
     }
 
     void Update(){
-        Debug.Log(swipes);
+        //Debug.Log(swipes);
         if(finalPhase && inFinalPos){
             TurnStylePosition();
         }
@@ -109,12 +112,23 @@ public class RightArm : MonoBehaviour
                     if(!swipe){
                         swipes += 1;
                         swipe = true;
+                        if(swipes < 3){
+                            fundsText.text = "Please Swipe Again";
+                        } else {
+                            fundsText.text = "Insufficient Funds";
+                        }
+                        funds.SetActive(true);
                     } else {
                         pos.y = 2.58f;
                     } 
                 }
             } else if(pos.x < 1.5f && tempX != 0){
                 if(pos.y > 2.5f){
+                    if(swipes < 3){
+                        funds.SetActive(false);
+                    } else {
+                        fundsText.text = "Press Y";
+                    }
                     swipe = false;
                     pos.y -= Time.deltaTime/4;
                 } else {
@@ -127,6 +141,7 @@ public class RightArm : MonoBehaviour
     }
 
     void HoldingPhone(float tempY, float tempZ){
+        funds.SetActive(false);
         transform.position = pos + newOffset;
         phoneSwapped = true;
         pos += new Vector3(0, tempY * speed * Time.deltaTime, -tempZ * speed * Time.deltaTime);

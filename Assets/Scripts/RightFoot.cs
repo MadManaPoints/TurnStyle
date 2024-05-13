@@ -41,6 +41,7 @@ public class RightFoot : MonoBehaviour
         float moveZ = map(tempZ, -1, 1, z.x, z.y);
 
         pos = new Vector3(moveX, 0, -moveZ);
+        //Debug.Log(pos);
     }
 
     float map(float value, float minA, float maxA, float minB, float maxB){

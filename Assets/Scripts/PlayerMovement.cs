@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float torque; 
     //float tempSpeed = -200.0f; 
     [SerializeField] float speed;
+    [SerializeField] float pushSpeed;
     [SerializeField] float maxSpeed;
     Vector3 moveDirection;
     Vector3 pos;
@@ -37,7 +38,7 @@ public class PlayerMovement : MonoBehaviour
     bool newPosStop;
     bool setFollow;
     [SerializeField] Transform follow; 
-    public RigBuilder rig;
+    //public RigBuilder rig;
     Vector3 velocity = Vector3.zero;
     static float t = 0.0f;
     static float tZ = 0.0f;
@@ -49,27 +50,27 @@ public class PlayerMovement : MonoBehaviour
         turnstile = GameObject.Find("Turn Thing").GetComponent<RotateTurnstile>();
 
         //not using this anymore but I'll keep for now
-        rig = GetComponent<RigBuilder>();
+        //rig = GetComponent<RigBuilder>();
 
         phone.SetActive(false);
     }
 
     void Update()
     {
-        //phaseThree = true;
-        //Debug.Log(playerRb.velocity.magnitude);
+        //Debug.Log(transform.position.z);
         if(!stopAtTurnstile){
             MovePlayer();
         } else if(!newPosition){
             if(!stepUp){
                 transform.position = new Vector3(transform.position.x + 0.20f, transform.position.y, transform.position.z);
+                playerRb.isKinematic = true;
                 stepUp = true;
             }
-            playerRb.isKinematic = true;
         }
 
         if(newPosition){
             if(!newPosStop){
+                playerRb.isKinematic = false;
                 //for now will use damp to change position - it's at least better than snapping
                 playerRb.constraints = ~RigidbodyConstraints.FreezeRotationY;
                 stepBack = new Vector3(transform.position.x - 0.18f, transform.position.y, transform.position.z);
@@ -89,7 +90,8 @@ public class PlayerMovement : MonoBehaviour
         if(finalPos && !allowFinalMovement){
             newPosition = false;
             if(!setFinalPos){
-                changePos = new Vector3(1.9f, transform.position.y, 2.1f);
+                Debug.Log("STARTING MOVEMENT");
+                changePos = new Vector3(1.35f, transform.position.y, 2.2f);
                 changeRotation = new Vector3(transform.localEulerAngles.x, 5.8f, transform.localEulerAngles.z);
                 phone.SetActive(false);
                 setFinalPos = true;
@@ -100,13 +102,16 @@ public class PlayerMovement : MonoBehaviour
                 if(Vector3.Distance(transform.position, changePos) > 0.1f){
                     playerRb.AddForce(direction * speed * Time.deltaTime);
                 } else {
+                    transform.position = new Vector3(1.25f, transform.position.y, 1.9f);
                     playerRb.velocity = Vector3.zero;
+                    Debug.Log("STOPPED");
                 }
 
                 //turn player
                 if(transform.localEulerAngles.y > 5.8f){
                     playerRb.AddTorque(Vector3.up * -torque * Time.deltaTime, ForceMode.Impulse);
                 } else {
+                    transform.position = new Vector3(1.25f, transform.position.y, 1.9f);
                     pos = transform.position;
                     finalPosStop = true;
                 }
@@ -115,9 +120,12 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if(finalPosStop){
+            //Debug.Log("YERR");
             if(!end){
                 allowFinalMovement = true;
+                playerRb.constraints = RigidbodyConstraints.FreezeRotation;
                 if(movingLeg){
+                    //Debug.Log("MOVING LEG");
                     MovePlayerForward();
                 }
             } else {
@@ -131,7 +139,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate(){
         if(finalPosStop){
-            if(!end){
+            if(!end && movingLeg){
                 PushPlayer();
             }
         }
@@ -154,7 +162,6 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void MovePlayerForward(){
-        playerRb.constraints = RigidbodyConstraints.FreezeRotation;
         //to move past the turnstile
         if(!setFollow){
             follow.position = transform.position;
@@ -164,24 +171,26 @@ public class PlayerMovement : MonoBehaviour
             vInput = Input.GetAxis("Vertical") * (1.0f + Time.deltaTime);
 
             float moveX = map(vInput, -1, 1, 0f, 2.0f);
-            moveX = Mathf.Max(moveX, 1.2f);
+            moveX = Mathf.Max(moveX, 1.1f);
             float moveH = Mathf.Lerp(follow.position.x, moveX, tX);
             tX += 0.5f * Time.deltaTime;
 
-            float moveZ = map(-hInput, -1, 1, 1.2f, 2.4f);
-            moveZ = Mathf.Max(moveZ, 1.9f);
+            float moveZ = map(-hInput, -1, 1, 0.6f, 2.6f);
+            moveZ = Mathf.Max(moveZ, 1.7f);
             float moveV = Mathf.Lerp(follow.position.z, moveZ, tZ);
             tZ += 0.5f * Time.deltaTime;
-            Debug.Log(transform.position.z);
 
             follow.position = new Vector3(moveH, follow.position.y, moveV);
+            //Debug.Log(follow.transform.position);
+            //Debug.Log(follow.transform.position);
         }
     }
 
     void PushPlayer(){
-        if(Vector3.Distance(transform.position, follow.position) > 0.002f){
-            Vector3 move = follow.position - transform.position;
-            playerRb.velocity = move * 10.0f * velocity.magnitude; 
+        if(Vector3.Distance(transform.position, follow.position) > 0.1f){
+            Vector3 move = (follow.position - transform.position).normalized;
+            playerRb.AddForce(move * pushSpeed, ForceMode.Impulse);
+            //Debug.Log(follow.position + "   " + transform.position);
         } else {
             playerRb.velocity = Vector3.zero; 
         }

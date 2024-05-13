@@ -15,8 +15,10 @@ public class PlayerCam : MonoBehaviour
     public bool nextPos;
     public bool finalCamPos; 
     public bool endCamPos;
+    bool setFinalPos;
     [SerializeField] Vector3 phaseOnePos = new Vector3(0.0f, 0.0f, 0.0f);
     [SerializeField] Vector3 phaseTwoPos = new Vector3(0.0f, 0.0f, 0.0f); 
+    [SerializeField] Vector3 lookAtCop;
     [SerializeField] Vector3 phaseThreePos = new Vector3(0, 0, 0);
     Vector3 velocity = Vector3.zero;
     [SerializeField] Transform player;
@@ -75,7 +77,15 @@ public class PlayerCam : MonoBehaviour
 
     void PhaseThreeCamPos(){
         transform.position = player.transform.position + finalOffset;
-        transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, phaseThreePos, ref velocity, 0.5f);
+        if(!setFinalPos){
+            transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, lookAtCop, ref velocity, 0.3f);
+            if(Vector3.Distance(transform.localEulerAngles, lookAtCop) < 0.2f){
+                setFinalPos = true;
+            }
+        } else {
+            transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, phaseThreePos, ref velocity, 0.3f);
+        }
+        
     }
 
     void EndCam(){

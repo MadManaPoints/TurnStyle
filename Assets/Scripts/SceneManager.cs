@@ -13,9 +13,13 @@ public class SceneManager : MonoBehaviour
     RightFoot rightFoot;
     FollowLeg leg;
     InputManager inputs;
+
+    //these aren't used anymore - will delete when new text is set up
     [SerializeField] GameObject phaseOneText;
     [SerializeField] GameObject phaseTwoText;
     [SerializeField] GameObject phaseThreeText;
+    //new text for Press B
+    [SerializeField] GameObject newPhaseThreeText;
     bool grab;
     bool moveLeg;
     bool moveForward;
@@ -51,6 +55,7 @@ public class SceneManager : MonoBehaviour
         phaseOneText.SetActive(false); 
         phaseTwoText.SetActive(false);
         phaseThreeText.SetActive(false);
+        newPhaseThreeText.SetActive(false);
     }
 
     void Update(){
@@ -84,10 +89,12 @@ public class SceneManager : MonoBehaviour
 
         if(player.newPosition && scanError){
             phaseThreeText.SetActive(true);
+            newPhaseThreeText.SetActive(true);
         }
 
         if(player.finalPos){
             phaseThreeText.SetActive(false);
+            newPhaseThreeText.SetActive(false);
             //Debug.Log(grab);
             turnstile.moveTurnstile = grab;
             if(grab){
