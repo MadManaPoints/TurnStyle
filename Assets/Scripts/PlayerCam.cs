@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,13 +9,14 @@ public class PlayerCam : MonoBehaviour
 {
     float xRotation;
     float yRotation;
-    float stopX = 40.0f; 
+    float targetTime = 2.0f; 
     //[SerializeField] float stopY = 175.0f; 
     [SerializeField] float sensitivity;
     public bool canMoveCam = true;
     public bool nextPos;
     public bool finalCamPos; 
     public bool endCamPos;
+    public bool acab;
     bool setFinalPos;
     [SerializeField] Vector3 phaseOnePos = new Vector3(0.0f, 0.0f, 0.0f);
     [SerializeField] Vector3 phaseTwoPos = new Vector3(0.0f, 0.0f, 0.0f); 
@@ -78,12 +80,19 @@ public class PlayerCam : MonoBehaviour
     void PhaseThreeCamPos(){
         transform.position = player.transform.position + finalOffset;
         if(!setFinalPos){
+            acab = true;
             transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, lookAtCop, ref velocity, 0.3f);
             if(Vector3.Distance(transform.localEulerAngles, lookAtCop) < 0.2f){
                 setFinalPos = true;
             }
         } else {
             transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, phaseThreePos, ref velocity, 0.3f);
+            if(targetTime > 0f){
+                targetTime -= Time.deltaTime;
+            } else {
+                targetTime = 0f;
+                acab = false;
+            }
         }
         
     }

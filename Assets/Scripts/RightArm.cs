@@ -130,7 +130,7 @@ public class RightArm : MonoBehaviour
                         fundsText.text = "Press Y";
                     }
                     swipe = false;
-                    pos.y -= Time.deltaTime/4;
+                    pos.y -= Time.deltaTime/2;
                 } else {
                     pos.y = 2.5f;
                 }

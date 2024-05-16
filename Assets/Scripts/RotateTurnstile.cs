@@ -1,7 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Unity.VisualScripting;
+using Unity.VisualScripting.FullSerializer.Internal;
+using TMPro;
 using UnityEngine;
+using Microsoft.Unity.VisualStudio.Editor;
 
 public class RotateTurnstile : MonoBehaviour
 {
@@ -11,22 +15,36 @@ public class RotateTurnstile : MonoBehaviour
     //public float x, y, z; //this was to test rotation - use z to move new turnstile 
     public bool moveTurnstile;
     public bool stuck;
+    public bool waitForRotation;
     bool grabSwitch;
-    bool [] positionSwitch = new bool [6]; 
+    bool setPos = true;
     public float rotateSpeed = 3.0f;
     static float t = 0.0f;
-    int index = 1;
+    float rotateZ = 180.0f;
+    float backward = 120.0f;
+    float forward = 240.0f;
+    float noReturn = 135.0f;
+    float targetTime = 1.0f;
+    bool noReturnSwitch;
+    bool motorOn;
+    bool turning;
+    [SerializeField] bool playerControl = true;
     Vector3 velocity = Vector3.zero;
-    Transform startPos;
+    Vector3 startPos;
     Quaternion initialPos;
     [SerializeField] float stopTurnstile;
-    Vector3 rotateVel = Vector3.zero; 
-    Vector3 rotateAcc;
-    [SerializeField] Vector3 [] barPositions = new Vector3[3];
-    bool canMove = true;
     [SerializeField] Transform follow; 
     Rigidbody rb;
     HingeJoint joint;
+    JointLimits limits;
+    [SerializeField] TextMeshProUGUI adText, thumbStick;
+    [SerializeField] Texture stepOne, stepTwo; 
+    [SerializeField] GameObject ad;
+    [SerializeField] Transform initialTransform;
+    public bool resetRot = false;
+    [SerializeField] GameObject bar;
+    [SerializeField] Material barMat;
+    bool startBarEmission;
     void Start()
     {
         rightArm = GameObject.Find("Right Hand_target").GetComponent<RightArm>();
@@ -37,73 +55,174 @@ public class RotateTurnstile : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         joint = GetComponent<HingeJoint>();
         
-        //makes Vector3 for each position it can stop at 
-        for(int i = 0; i < barPositions.Length; i++){
-            barPositions[i] = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, 120 * i); 
-        }
+        startPos = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, 180.0f);
+        transform.localEulerAngles = startPos;
+        follow.localEulerAngles = startPos;
 
-        //barPositions[0] = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, 360.0f);
-        transform.localEulerAngles = barPositions[index];
-        follow.localEulerAngles = barPositions[index];
-        //startPos.localEulerAngles = follow.localEulerAngles; 
-        positionSwitch[index] = true;  
+        limits = joint.limits;
+
+        initialTransform.position = transform.position;
+        initialTransform.rotation = transform.rotation;
     }
 
     void Update()
     {
-        //Debug.Log(barPositions[index]);
+        //Debug.Log(initialTransform.position + "  " + initialTransform.rotation);
+        
         if(moveTurnstile){
             SpinTurnstile();
+            bar.GetComponent<Renderer>().material = barMat;
         }
-        PositionCheck();
+        //PositionCheck();
 
         if(touching){
             score.SubtractScore();
         }
+
+        MotorBehavior();
+        //PointOfNoReturn();
+        //joint.useMotor = true;
     }
 
     void FixedUpdate(){
-        if(moveTurnstile){
-            SpinTurnstileHinge();
+        //if(moveTurnstile){
+        //    SpinTurnstileHinge();
+        //}
+        SpinTurnstileHinge();
+    }
+
+    void MotorBehavior(){
+        if(noReturnSwitch && !moveTurnstile){
+            turning = true;
+            playerControl = false; 
+            noReturnSwitch = false;
         }
     }
 
-    void TorqueTest(){
-       //Debug.Log(follow.rotation);
+    void PointOfNoReturn(){
+       if(noReturnSwitch){
+            if(!moveTurnstile){
+                turning = true;
+                playerControl = false;
+                backward -= 120.0f;
+                forward -= 120.0f;
+                noReturn -= 120.0f;
+                stopTurnstile -= 120.0f;
+                noReturnSwitch = false;
+            }
+       } 
+       
+       
+       /*else if(motorOn){
+            if(!turning){
+                follow.localEulerAngles = new Vector3(follow.localEulerAngles.x, follow.localEulerAngles.y, backward + 60.0f);
+                turning = true;
+            }
+       }
+
+       if(!motorOn){
+        turning = false;
+       }*/
     }
 
     void SpinTurnstileHinge(){
         //OK THIS IS THE ONE!!
-        //OMG IT'S ACTUALLY WORKING 
+        //OMG IT'S ACTUALLY WORKING - NO IT'S NOT
         //NOT EVEN USING THE HINGE :') 
-        if (Vector3.Distance(transform.localEulerAngles, follow.position) > 0.2f){
+        if(turning){
+            joint.useMotor = true;
+            targetTime -= Time.deltaTime;
+            if(targetTime <= 0){
+                targetTime = 1.0f;
+                joint.useMotor = false;
+                transform.position = initialTransform.position;
+                transform.rotation = initialTransform.rotation;
+                playerControl = true;
+                follow.localEulerAngles = new Vector3(follow.localEulerAngles.x, follow.localEulerAngles.y, 180.0f);
+                turning = false; 
+            }
+        } else if(Vector3.Distance(transform.localEulerAngles, follow.position) > 0.2f){
                 Vector3 turn = follow.localEulerAngles - transform.localEulerAngles;
-                rb.angularVelocity = turn;
+                rb.angularVelocity = turn * 2.0f;
+                //Debug.Log(rb.angularVelocity.magnitude);
         } else {
             rb.angularVelocity = Vector3.zero;
+            //Debug.Log("YERR");
+            playerControl = true;
+            //joint.useMotor = false;
+            //motorOn = false;
+        }
+    
+        if(joint.useMotor && joint.currentForce.z < 1f){
+            //Time.timeScale = 0;
         }
     }
 
     void SpinTurnstile(){
-        //this works well enough but it will ignore collisions this way 
         float moveY = Input.GetAxis("Mouse Y") * (1.0f + Time.deltaTime);
+        if(!playerControl){
+            moveY = 0f;
+        }
+            rotateZ = map(moveY, -1, 1, backward, forward);
 
-        float rotateZ = map(moveY, -1, 1, 120, 240);
-        //rotateZ = Mathf.Min(rotateZ, stopTurnstile);
+        if(rotateZ < backward + 30){
+            ad.GetComponent<Renderer>().material.SetTexture("_MainTex", stepTwo);
+            adText.text = "RB";
+            thumbStick.text = "L";
+        } else {
+            ad.GetComponent<Renderer>().material.SetTexture("_MainText", stepOne);
+            adText.text = "RT";
+            thumbStick.text = "R";
+        }
+
+        /*if(rotateZ < limits.max + 2.0f){
+            if(!turning){
+                limits.min -= 120.0f;
+                limits.max -= 120.0f;
+                backward -= 120.0f;
+                forward -= 120.0f;
+                turning = true;
+            }
+        }*/
+
+        //Debug.Log(rotateZ);
+
+
+
+        if(noReturnSwitch){
+            rotateZ = Mathf.Min(rotateZ, noReturn);
+        } else {
+            rotateZ = Mathf.Min(rotateZ, stopTurnstile);
+        }
+
+        /*if(rotateZ < backward + 5.0f && !noReturnSwitch){
+            stopTurnstile = backward + 5.0f;
+            noReturnSwitch = true;
+        } else {
+            
+            if(!setPos){
+                stopTurnstile = backward + 61.0f;
+                follow.localEulerAngles = new Vector3(follow.localEulerAngles.x, follow.localEulerAngles.y, backward + 60.0f);
+                setPos = true;
+            }
+        }*/
+
+        
+        //rotateZ = Mathf.Max(rotateZ, 150);
+        //Debug.Log(rotateZ);
+
         float rotateTurnstile = Mathf.Lerp(follow.localEulerAngles.z, rotateZ, t);
         t += 0.5f * Time.deltaTime;
+        if(rotateTurnstile < noReturn && !noReturnSwitch){
+            noReturnSwitch = true; 
+        }
+        //Debug.Log(backward + "  " + rotateTurnstile + "  " + forward + "  " + noReturn + "  " + stopTurnstile + " NO RETURN:  " + noReturnSwitch + " PLAYER INPUT: " + playerControl);
         follow.localEulerAngles = new Vector3(follow.localEulerAngles.x, follow.localEulerAngles.y, -rotateTurnstile);
         //Debug.Log(moveY);
     }
 
     void PositionCheck(){
         //GAHHHHH
-        for(int i = 0; i < positionSwitch.Length; i++){
-            if(positionSwitch[i]){
-                index = i;
-            }
-        }
-
         //returning to this later
         //Debug.Log(index); 
     }
@@ -120,7 +239,7 @@ public class RotateTurnstile : MonoBehaviour
     void OnCollisionEnter(Collision col){
         if(col.gameObject.tag == "Player"){
             touching = true;
-            Debug.Log(score.score);
+            //Debug.Log(score.score);
         }
     }
 

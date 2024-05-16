@@ -90,7 +90,7 @@ public class PlayerMovement : MonoBehaviour
         if(finalPos && !allowFinalMovement){
             newPosition = false;
             if(!setFinalPos){
-                Debug.Log("STARTING MOVEMENT");
+                //Debug.Log("STARTING MOVEMENT");
                 changePos = new Vector3(1.35f, transform.position.y, 2.2f);
                 changeRotation = new Vector3(transform.localEulerAngles.x, 5.8f, transform.localEulerAngles.z);
                 phone.SetActive(false);
@@ -104,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
                 } else {
                     transform.position = new Vector3(1.25f, transform.position.y, 1.9f);
                     playerRb.velocity = Vector3.zero;
-                    Debug.Log("STOPPED");
+                    //Debug.Log("STOPPED");
                 }
 
                 //turn player
@@ -176,7 +176,7 @@ public class PlayerMovement : MonoBehaviour
             tX += 0.5f * Time.deltaTime;
 
             float moveZ = map(-hInput, -1, 1, 0.6f, 2.6f);
-            moveZ = Mathf.Max(moveZ, 1.7f);
+            moveZ = Mathf.Max(moveZ, 1.8f);
             float moveV = Mathf.Lerp(follow.position.z, moveZ, tZ);
             tZ += 0.5f * Time.deltaTime;
 

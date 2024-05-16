@@ -19,7 +19,7 @@ public class FrontTurnstileCollision : MonoBehaviour
     void OnCollisionEnter(Collision col){
         if(col.gameObject.tag == "Player"){
             touching = true;
-            Debug.Log(score.score);
+            //Debug.Log(score.score);
         }
     }
 
