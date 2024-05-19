@@ -12,7 +12,7 @@ public class RightArm : MonoBehaviour
     bool inPhone; 
     public bool phoneSwapped;
     public bool finalPhase;
-    bool swipe; 
+    public bool swipe; 
     public int swipes = 0;
     bool yPos;
     bool inFinalPos;
@@ -27,6 +27,7 @@ public class RightArm : MonoBehaviour
     Vector3 finalPos = new Vector3(0,0,0);
     [SerializeField] Transform bar;
     [SerializeField] Vector3 barOffset; 
+    [SerializeField] Vector3 angleOffset;
     [SerializeField] GameObject funds;
     [SerializeField] TextMeshProUGUI fundsText;
     
@@ -90,9 +91,9 @@ public class RightArm : MonoBehaviour
             transform.position = pos + offset;
             pos += new Vector3(tempX * speed * Time.deltaTime, 0, 0);//-tempZ * speed * Time.deltaTime);
 
-            if(pos.x > 1.9f){
-                pos.x = 1.9f;
-                swiped = true;
+            if(pos.x > 1.82f){
+                pos.x = 1.82f;
+                //swiped = true;
             } else if(pos.x < 1.4f){
             pos.x = 1.4f;
             }
@@ -103,13 +104,14 @@ public class RightArm : MonoBehaviour
         //    pos.z = 1.2f;
         //}
             pos.z = 1.37341f;
+            Debug.Log(pos.y);
 
             if(pos.x > 1.75f){
                 //Debug.Log("YERR");
                 if(pos.y < 2.58f && tempX != 0){
                     pos.y += Time.deltaTime/2;
                 } else {
-                    if(!swipe){
+                    if(!swipe && Input.GetAxis("Mouse Y") > 0.5f){
                         swipes += 1;
                         swipe = true;
                         if(swipes < 3){
@@ -129,8 +131,8 @@ public class RightArm : MonoBehaviour
                     } else {
                         fundsText.text = "Press Y";
                     }
-                    swipe = false;
                     pos.y -= Time.deltaTime/2;
+                    swipe = false;
                 } else {
                     pos.y = 2.5f;
                 }
@@ -161,6 +163,7 @@ public class RightArm : MonoBehaviour
 
     void TurnStylePosition(){
         transform.position = bar.position + barOffset;
+        transform.localEulerAngles = angleOffset; 
         //Debug.Log("YERR");
     }
 }

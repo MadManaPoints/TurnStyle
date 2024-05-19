@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -105,6 +106,10 @@ public class SceneManager : MonoBehaviour
             playerCam.endCamPos = player.end;
         }
 
+        if(player.canRestart && Input.GetButton("Restart")){
+            Reset();
+        }
+
         //Debug.Log(grab);
     }
 
@@ -147,13 +152,17 @@ public class SceneManager : MonoBehaviour
         }
     }
 
+    void Reset(){
+        UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene");
+    }
+
     void OnEnable(){
-        inputs.Player.Enable();
+        //inputs.Player.Enable();
     }
 
     void OnDisable(){
-        inputs.Player.Disable();
-    }
+        //inputs.Player.Disable();
+    } 
 
     void OnTriggerEnter(Collider col){
         if(col.gameObject.tag == "Player"){

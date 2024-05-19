@@ -7,6 +7,7 @@ using UnityEngine.Animations.Rigging;
 public class PlayerMovement : MonoBehaviour
 {
     Rigidbody playerRb;
+    RightArm rightArm; 
     [SerializeField] GameObject trainPass, phone;
     float hInput;
     float vInput;
@@ -31,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
     public bool finalPos;
     public bool movingLeg;
     public bool end;
+    public bool canRestart;
     bool stepUp;
     bool setFinalPos; 
     bool finalPosStop;
@@ -43,6 +45,12 @@ public class PlayerMovement : MonoBehaviour
     static float t = 0.0f;
     static float tZ = 0.0f;
     static float tX = 0.0f;
+    [SerializeField] GameObject drums; 
+    Animator drummerAnim; 
+    AudioSource audio;
+    [SerializeField] AudioClip swipeAud, thump, turn, rotateOnce; 
+    bool test;
+    bool test2;
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
@@ -51,7 +59,9 @@ public class PlayerMovement : MonoBehaviour
 
         //not using this anymore but I'll keep for now
         //rig = GetComponent<RigBuilder>();
-
+        drummerAnim = GameObject.Find("drummer").GetComponent<Animator>();
+        rightArm = GameObject.Find("Right Hand_target").GetComponent<RightArm>();
+        audio = GetComponent<AudioSource>();
         phone.SetActive(false);
     }
 
@@ -130,9 +140,12 @@ public class PlayerMovement : MonoBehaviour
                 }
             } else {
                 Win();
+                drums.SetActive(true);
+                //audio.Stop();
+                drummerAnim.SetBool("Drumming", true);
             }
         }
-
+        SoundEffects();
         SetAnim();
         LockMouse();
     }
@@ -201,6 +214,22 @@ public class PlayerMovement : MonoBehaviour
 
         if(playerRb.velocity.magnitude > maxSpeed){
             playerRb.velocity = Vector3.ClampMagnitude(playerRb.velocity, maxSpeed); 
+        }
+    }
+
+    void SoundEffects(){
+        if(rightArm.swipe && !test){
+            test = true;
+            audio.PlayOneShot(swipeAud, 2f);
+        } else if(!rightArm.swipe && test){
+            test = false;
+        }
+
+        if(turnstile.turningSound && !test2){ 
+            test2 = true; 
+            audio.PlayOneShot(rotateOnce);
+        } else if(!turnstile.turningSound && test2){
+            test2 = false; 
         }
     }
 

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class End : MonoBehaviour
 {
+    PlayerMovement player;
     bool end;
     [SerializeField] Image fade;
     [SerializeField] GameObject thanks;
@@ -15,6 +16,8 @@ public class End : MonoBehaviour
     {
         black = fade.color;
         thanks.SetActive(false);
+
+        player = GameObject.Find("Player").GetComponent<PlayerMovement>();
     }
 
     void Update()
@@ -26,7 +29,7 @@ public class End : MonoBehaviour
             } else {
                 black.a = 1.0f;
                 thanks.SetActive(true);
-                Time.timeScale = 0;
+                player.canRestart = true;
             }
         }
     }

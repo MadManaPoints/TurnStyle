@@ -45,6 +45,8 @@ public class RotateTurnstile : MonoBehaviour
     [SerializeField] GameObject bar;
     [SerializeField] Material barMat;
     bool startBarEmission;
+    public bool turningSound; 
+    public bool turnSoundSwitch; 
     void Start()
     {
         rightArm = GameObject.Find("Right Hand_target").GetComponent<RightArm>();
@@ -100,6 +102,7 @@ public class RotateTurnstile : MonoBehaviour
     }
 
     void PointOfNoReturn(){
+        //not using this anymore
        if(noReturnSwitch){
             if(!moveTurnstile){
                 turning = true;
@@ -111,30 +114,18 @@ public class RotateTurnstile : MonoBehaviour
                 noReturnSwitch = false;
             }
        } 
-       
-       
-       /*else if(motorOn){
-            if(!turning){
-                follow.localEulerAngles = new Vector3(follow.localEulerAngles.x, follow.localEulerAngles.y, backward + 60.0f);
-                turning = true;
-            }
-       }
-
-       if(!motorOn){
-        turning = false;
-       }*/
     }
 
     void SpinTurnstileHinge(){
         //OK THIS IS THE ONE!!
-        //OMG IT'S ACTUALLY WORKING - NO IT'S NOT
-        //NOT EVEN USING THE HINGE :') 
         if(turning){
             joint.useMotor = true;
+            turningSound = true;
             targetTime -= Time.deltaTime;
             if(targetTime <= 0){
                 targetTime = 1.0f;
                 joint.useMotor = false;
+                turningSound = false; 
                 transform.position = initialTransform.position;
                 transform.rotation = initialTransform.rotation;
                 playerControl = true;
@@ -145,13 +136,7 @@ public class RotateTurnstile : MonoBehaviour
                 Vector3 turn = follow.localEulerAngles - transform.localEulerAngles;
                 rb.angularVelocity = turn * 2.0f;
                 //Debug.Log(rb.angularVelocity.magnitude);
-        } else {
-            rb.angularVelocity = Vector3.zero;
-            //Debug.Log("YERR");
-            playerControl = true;
-            //joint.useMotor = false;
-            //motorOn = false;
-        }
+        } 
     
         if(joint.useMotor && joint.currentForce.z < 1f){
             //Time.timeScale = 0;
@@ -175,16 +160,6 @@ public class RotateTurnstile : MonoBehaviour
             thumbStick.text = "R";
         }
 
-        /*if(rotateZ < limits.max + 2.0f){
-            if(!turning){
-                limits.min -= 120.0f;
-                limits.max -= 120.0f;
-                backward -= 120.0f;
-                forward -= 120.0f;
-                turning = true;
-            }
-        }*/
-
         //Debug.Log(rotateZ);
 
 
@@ -195,22 +170,6 @@ public class RotateTurnstile : MonoBehaviour
             rotateZ = Mathf.Min(rotateZ, stopTurnstile);
         }
 
-        /*if(rotateZ < backward + 5.0f && !noReturnSwitch){
-            stopTurnstile = backward + 5.0f;
-            noReturnSwitch = true;
-        } else {
-            
-            if(!setPos){
-                stopTurnstile = backward + 61.0f;
-                follow.localEulerAngles = new Vector3(follow.localEulerAngles.x, follow.localEulerAngles.y, backward + 60.0f);
-                setPos = true;
-            }
-        }*/
-
-        
-        //rotateZ = Mathf.Max(rotateZ, 150);
-        //Debug.Log(rotateZ);
-
         float rotateTurnstile = Mathf.Lerp(follow.localEulerAngles.z, rotateZ, t);
         t += 0.5f * Time.deltaTime;
         if(rotateTurnstile < noReturn && !noReturnSwitch){
@@ -219,12 +178,6 @@ public class RotateTurnstile : MonoBehaviour
         //Debug.Log(backward + "  " + rotateTurnstile + "  " + forward + "  " + noReturn + "  " + stopTurnstile + " NO RETURN:  " + noReturnSwitch + " PLAYER INPUT: " + playerControl);
         follow.localEulerAngles = new Vector3(follow.localEulerAngles.x, follow.localEulerAngles.y, -rotateTurnstile);
         //Debug.Log(moveY);
-    }
-
-    void PositionCheck(){
-        //GAHHHHH
-        //returning to this later
-        //Debug.Log(index); 
     }
 
     float map(float value, float minA, float maxA, float minB, float maxB){
