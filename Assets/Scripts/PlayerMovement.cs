@@ -46,11 +46,13 @@ public class PlayerMovement : MonoBehaviour
     static float tZ = 0.0f;
     static float tX = 0.0f;
     [SerializeField] GameObject drums; 
-    Animator drummerAnim; 
+    Animator drummerAnim;
+    Animator benchGuyAnim;
     AudioSource audio;
     [SerializeField] AudioClip swipeAud, thump, turn, rotateOnce; 
     bool test;
     bool test2;
+    bool test3;
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
@@ -60,6 +62,8 @@ public class PlayerMovement : MonoBehaviour
         //not using this anymore but I'll keep for now
         //rig = GetComponent<RigBuilder>();
         drummerAnim = GameObject.Find("drummer").GetComponent<Animator>();
+        benchGuyAnim = GameObject.Find("sittingGuy").GetComponent<Animator>();
+
         rightArm = GameObject.Find("Right Hand_target").GetComponent<RightArm>();
         audio = GetComponent<AudioSource>();
         phone.SetActive(false);
@@ -143,6 +147,7 @@ public class PlayerMovement : MonoBehaviour
                 drums.SetActive(true);
                 //audio.Stop();
                 drummerAnim.SetBool("Drumming", true);
+                benchGuyAnim.SetBool("Clap", true);
             }
         }
         SoundEffects();
@@ -230,6 +235,13 @@ public class PlayerMovement : MonoBehaviour
             audio.PlayOneShot(rotateOnce);
         } else if(!turnstile.turningSound && test2){
             test2 = false; 
+        }
+
+        if(turnstile.thumpSound && !test3){
+            test3 = true;
+            audio.PlayOneShot(thump, 2f);
+        } else if(!turnstile.thumpSound && test3){
+            test3 = false;
         }
     }
 

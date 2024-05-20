@@ -14,6 +14,7 @@ public class RightArm : MonoBehaviour
     public bool finalPhase;
     public bool swipe; 
     public int swipes = 0;
+    public bool letGo;
     bool yPos;
     bool inFinalPos;
     //Vector3 phonePosition; 
@@ -30,7 +31,7 @@ public class RightArm : MonoBehaviour
     [SerializeField] Vector3 angleOffset;
     [SerializeField] GameObject funds;
     [SerializeField] TextMeshProUGUI fundsText;
-    
+    Vector3 velocity = Vector3.zero;
     void Start()
     {
         funds.SetActive(false);
@@ -104,7 +105,7 @@ public class RightArm : MonoBehaviour
         //    pos.z = 1.2f;
         //}
             pos.z = 1.37341f;
-            Debug.Log(pos.y);
+            //Debug.Log(pos.y);
 
             if(pos.x > 1.75f){
                 //Debug.Log("YERR");
@@ -162,7 +163,16 @@ public class RightArm : MonoBehaviour
     }
 
     void TurnStylePosition(){
-        transform.position = bar.position + barOffset;
+        if(letGo){
+            //Debug.Log(letGo);
+            transform.position = Vector3.SmoothDamp(transform.position, bar.position + barOffset, ref velocity, 0.2f);
+            if(Vector3.Distance(transform.position, bar.position + offset) < 0.2f){
+                letGo = false;
+            }
+        } else {
+            transform.position = bar.position + barOffset;
+        }
+        
         transform.localEulerAngles = angleOffset; 
         //Debug.Log("YERR");
     }

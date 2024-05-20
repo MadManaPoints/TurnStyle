@@ -10,6 +10,7 @@ public class PlayerCam : MonoBehaviour
     float xRotation;
     float yRotation;
     float targetTime = 2.0f; 
+    float endTargetTime = 1.5f;
     //[SerializeField] float stopY = 175.0f; 
     [SerializeField] float sensitivity;
     public bool canMoveCam = true;
@@ -17,10 +18,12 @@ public class PlayerCam : MonoBehaviour
     public bool finalCamPos; 
     public bool endCamPos;
     public bool acab;
+    bool clap;
     bool setFinalPos;
     [SerializeField] Vector3 phaseOnePos = new Vector3(0.0f, 0.0f, 0.0f);
     [SerializeField] Vector3 phaseTwoPos = new Vector3(0.0f, 0.0f, 0.0f); 
     [SerializeField] Vector3 lookAtCop;
+    [SerializeField] Vector3 lookAtGuy;
     [SerializeField] Vector3 phaseThreePos = new Vector3(0, 0, 0);
     Vector3 velocity = Vector3.zero;
     [SerializeField] Transform player;
@@ -99,6 +102,14 @@ public class PlayerCam : MonoBehaviour
 
     void EndCam(){
         transform.position = player.transform.position + offset;
-        transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, new Vector3(0, 90f, 0), ref velocity, 0.3f);
+        if(!clap){
+            transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, lookAtGuy, ref velocity, 0.3f);
+            endTargetTime -= Time.deltaTime;
+            if(endTargetTime <= 0){
+                clap = true; 
+            }
+        } else {
+            transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, new Vector3(0, 90f, 0), ref velocity, 0.3f);
+        }
     }
 }

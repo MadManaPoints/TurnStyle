@@ -23,7 +23,7 @@ public class RotateTurnstile : MonoBehaviour
     float rotateZ = 180.0f;
     float backward = 120.0f;
     float forward = 240.0f;
-    float noReturn = 135.0f;
+    float noReturn = 125.0f;
     float targetTime = 1.0f;
     bool noReturnSwitch;
     bool motorOn;
@@ -47,6 +47,7 @@ public class RotateTurnstile : MonoBehaviour
     bool startBarEmission;
     public bool turningSound; 
     public bool turnSoundSwitch; 
+    public bool thumpSound;
     void Start()
     {
         rightArm = GameObject.Find("Right Hand_target").GetComponent<RightArm>();
@@ -75,21 +76,16 @@ public class RotateTurnstile : MonoBehaviour
             SpinTurnstile();
             bar.GetComponent<Renderer>().material = barMat;
         }
-        //PositionCheck();
 
         if(touching){
             score.SubtractScore();
         }
 
         MotorBehavior();
-        //PointOfNoReturn();
-        //joint.useMotor = true;
+  
     }
 
     void FixedUpdate(){
-        //if(moveTurnstile){
-        //    SpinTurnstileHinge();
-        //}
         SpinTurnstileHinge();
     }
 
@@ -101,25 +97,11 @@ public class RotateTurnstile : MonoBehaviour
         }
     }
 
-    void PointOfNoReturn(){
-        //not using this anymore
-       if(noReturnSwitch){
-            if(!moveTurnstile){
-                turning = true;
-                playerControl = false;
-                backward -= 120.0f;
-                forward -= 120.0f;
-                noReturn -= 120.0f;
-                stopTurnstile -= 120.0f;
-                noReturnSwitch = false;
-            }
-       } 
-    }
-
     void SpinTurnstileHinge(){
         //OK THIS IS THE ONE!!
         if(turning){
             joint.useMotor = true;
+            rightArm.letGo = true;
             turningSound = true;
             targetTime -= Time.deltaTime;
             if(targetTime <= 0){
@@ -136,10 +118,6 @@ public class RotateTurnstile : MonoBehaviour
                 Vector3 turn = follow.localEulerAngles - transform.localEulerAngles;
                 rb.angularVelocity = turn * 2.0f;
                 //Debug.Log(rb.angularVelocity.magnitude);
-        } 
-    
-        if(joint.useMotor && joint.currentForce.z < 1f){
-            //Time.timeScale = 0;
         }
     }
 
@@ -162,7 +140,7 @@ public class RotateTurnstile : MonoBehaviour
 
         //Debug.Log(rotateZ);
 
-
+        ThumpAudio(moveY);
 
         if(noReturnSwitch){
             rotateZ = Mathf.Min(rotateZ, noReturn);
@@ -178,6 +156,24 @@ public class RotateTurnstile : MonoBehaviour
         //Debug.Log(backward + "  " + rotateTurnstile + "  " + forward + "  " + noReturn + "  " + stopTurnstile + " NO RETURN:  " + noReturnSwitch + " PLAYER INPUT: " + playerControl);
         follow.localEulerAngles = new Vector3(follow.localEulerAngles.x, follow.localEulerAngles.y, -rotateTurnstile);
         //Debug.Log(moveY);
+    }
+    
+    void ThumpAudio(float tempMoveY){
+        if(!noReturnSwitch && rotateZ > stopTurnstile){
+            if(tempMoveY > 0.1f){
+                thumpSound = true;
+            }
+        } else if(rotateZ < stopTurnstile){
+            thumpSound = false;
+        }
+
+        if(noReturnSwitch && rotateZ > noReturn){
+            if(tempMoveY > 0.1f){
+                thumpSound = true;
+            }
+        } else if(rotateZ < noReturn){
+            thumpSound = false;
+        }
     }
 
     float map(float value, float minA, float maxA, float minB, float maxB){
