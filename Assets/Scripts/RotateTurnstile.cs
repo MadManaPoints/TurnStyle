@@ -26,7 +26,7 @@ public class RotateTurnstile : MonoBehaviour
     bool noReturnSwitch;
     bool motorOn;
     bool turning;
-    [SerializeField] bool playerControl = true;
+    [SerializeField] bool playerControl;
     Vector3 velocity = Vector3.zero;
     Vector3 startPos;
     Quaternion initialPos;
@@ -68,12 +68,14 @@ public class RotateTurnstile : MonoBehaviour
 
     void Update()
     {
-        //Debug.Log(initialTransform.position + "  " + initialTransform.rotation);
-        
         if(moveTurnstile){
-            SpinTurnstile();
+            playerControl = true;
             bar.GetComponent<Renderer>().material = barMat;
+        } else {
+            playerControl = false;
         }
+
+        SpinTurnstile();
 
         if(touching){
             score.SubtractScore();

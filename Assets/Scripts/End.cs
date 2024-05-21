@@ -10,26 +10,38 @@ public class End : MonoBehaviour
     bool end;
     [SerializeField] Image fade;
     [SerializeField] GameObject thanks;
+    [SerializeField] GameObject gameOver;
     Color black;
 
     void Start()
     {
         black = fade.color;
         thanks.SetActive(false);
+        gameOver.SetActive(false);
 
         player = GameObject.Find("Player").GetComponent<PlayerMovement>();
     }
 
     void Update()
     {
+        if(player.lose){
+            end = true;
+        }
+
         if(end){
             fade.color = black;
-            if(black.a < 1.0f){
+            if(black.a < 1.0f && !player.lose){
                 black.a += Time.deltaTime;
             } else {
                 black.a = 1.0f;
-                thanks.SetActive(true);
+                if(player.lose){
+                    gameOver.SetActive(true);
+                } else {
+                    thanks.SetActive(true);
+                }
+                
                 player.canRestart = true;
+                Time.timeScale = 0;
             }
         }
     }

@@ -69,6 +69,7 @@ public class SceneManager : MonoBehaviour
         //Debug.Log(moveLeg);
         //moveLeg = inputs.Player.MoveLeg.IsInProgress();
         moveLeg = Input.GetButton("Move Leg");
+
         Phases();
 
         if(rightArm.swipes >= 3 && rightArm.swiped){
@@ -108,8 +109,10 @@ public class SceneManager : MonoBehaviour
 
         if(player.canRestart && Input.GetButton("Restart")){
             Reset();
+            Time.timeScale = 1;
         }
 
+        QuitGame();
         //Debug.Log(grab);
     }
 
@@ -154,6 +157,12 @@ public class SceneManager : MonoBehaviour
 
     void Reset(){
         UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene");
+    }
+
+    void QuitGame(){
+        if (Input.GetKey(KeyCode.Escape)){
+            Application.Quit();
+        }
     }
 
     void OnEnable(){

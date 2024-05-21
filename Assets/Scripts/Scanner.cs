@@ -18,7 +18,7 @@ public class Scanner : MonoBehaviour
 
     void Update()
     {
-        if(tries >= 3){
+        if(tries >= 2){
             gm.scanError = true;
         }
     }

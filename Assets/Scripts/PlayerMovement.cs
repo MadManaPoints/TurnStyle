@@ -34,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
     public bool finalPos;
     public bool movingLeg;
     public bool end;
+    public bool lose;
     public bool canRestart;
     bool stepUp;
     bool easeIntoPos;
@@ -52,11 +53,12 @@ public class PlayerMovement : MonoBehaviour
     Animator drummerAnim;
     Animator benchGuyAnim;
     new AudioSource audio;
-    [SerializeField] AudioClip swipeAud, thump, turn, rotateOnce, beepBoop; 
+    [SerializeField] AudioClip swipeAud, thump, turn, rotateOnce, beepBoop, womp; 
     bool test;
     bool test2;
     bool test3;
     bool test4;
+    bool test5;
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
@@ -208,12 +210,11 @@ public class PlayerMovement : MonoBehaviour
             tX += 0.5f * Time.deltaTime;
 
             float moveZ = map(-hInput, -1, 1, 0.6f, 2.6f);
-            moveZ = Mathf.Max(moveZ, 1.8f);
+            moveZ = Mathf.Max(moveZ, 1.85f);
             float moveV = Mathf.Lerp(follow.position.z, moveZ, tZ);
             tZ += 0.5f * Time.deltaTime;
 
             follow.position = new Vector3(moveH, follow.position.y, moveV);
-            //Debug.Log(follow.transform.position);
             //Debug.Log(follow.transform.position);
         }
     }
@@ -263,6 +264,11 @@ public class PlayerMovement : MonoBehaviour
             audio.PlayOneShot(beepBoop);
         } else if(!scanner.beepBoop && test4){
             test4 = false;
+        }
+
+        if(lose && !test5){
+            test5 = true;
+            audio.PlayOneShot(womp);
         }
     }
 
