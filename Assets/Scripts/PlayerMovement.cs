@@ -7,7 +7,8 @@ using UnityEngine.Animations.Rigging;
 public class PlayerMovement : MonoBehaviour
 {
     Rigidbody playerRb;
-    RightArm rightArm; 
+    RightArm rightArm;
+    Scanner scanner;
     [SerializeField] GameObject trainPass, phone;
     float hInput;
     float vInput;
@@ -21,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
     Vector3 stepBack;
     Vector3 changePos;
     Vector3 changeRotation;
+    Vector3 ease;
     Animator anim;
     RotateTurnstile turnstile;
     public KeyCode esc = KeyCode.Escape;
@@ -34,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
     public bool end;
     public bool canRestart;
     bool stepUp;
+    bool easeIntoPos;
     bool setFinalPos; 
     bool finalPosStop;
     bool allowFinalMovement; 
@@ -48,11 +51,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] GameObject drums; 
     Animator drummerAnim;
     Animator benchGuyAnim;
-    AudioSource audio;
-    [SerializeField] AudioClip swipeAud, thump, turn, rotateOnce; 
+    new AudioSource audio;
+    [SerializeField] AudioClip swipeAud, thump, turn, rotateOnce, beepBoop; 
     bool test;
     bool test2;
     bool test3;
+    bool test4;
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
@@ -63,6 +67,7 @@ public class PlayerMovement : MonoBehaviour
         //rig = GetComponent<RigBuilder>();
         drummerAnim = GameObject.Find("drummer").GetComponent<Animator>();
         benchGuyAnim = GameObject.Find("sittingGuy").GetComponent<Animator>();
+        scanner = GameObject.Find("Scanner").GetComponent<Scanner>();
 
         rightArm = GameObject.Find("Right Hand_target").GetComponent<RightArm>();
         audio = GetComponent<AudioSource>();
@@ -76,24 +81,33 @@ public class PlayerMovement : MonoBehaviour
             MovePlayer();
         } else if(!newPosition){
             if(!stepUp){
-                transform.position = new Vector3(transform.position.x + 0.20f, transform.position.y, transform.position.z);
+                //transform.position = new Vector3(transform.position.x + 0.20f, transform.position.y, transform.position.z);
+                ease = new Vector3(transform.position.x + 0.20f, transform.position.y, transform.position.z);
                 playerRb.isKinematic = true;
                 stepUp = true;
+            } else if(!easeIntoPos && Vector3.Distance(transform.position, ease) > 0.01f){
+                transform.position = Vector3.SmoothDamp(transform.position, ease, ref velocity, 0.1f);
             }
         }
 
         if(newPosition){
             if(!newPosStop){
+                easeIntoPos = true;
                 playerRb.isKinematic = false;
                 //for now will use damp to change position - it's at least better than snapping
                 playerRb.constraints = ~RigidbodyConstraints.FreezeRotationY;
                 stepBack = new Vector3(transform.position.x - 0.18f, transform.position.y, transform.position.z);
                 trainPass.SetActive(false);
-                phone.SetActive(true);
                 newPosStop = true;
             } else {
                 transform.position = Vector3.Lerp(transform.position, stepBack, t);
                 t += 0.25f * Time.deltaTime;
+                phone.SetActive(true);
+                //if(Vector3.Distance(transform.position, stepBack) > 0.01f){
+                //    transform.position = Vector3.SmoothDamp(transform.position, stepBack, ref velocity, 1f);
+                //} else {
+                //    phone.SetActive(true);
+                //}
             }
             
             //newPosStop = true;
@@ -242,6 +256,13 @@ public class PlayerMovement : MonoBehaviour
             audio.PlayOneShot(thump, 2f);
         } else if(!turnstile.thumpSound && test3){
             test3 = false;
+        }
+
+        if(scanner.beepBoop && !test4){
+            test4 = true;
+            audio.PlayOneShot(beepBoop);
+        } else if(!scanner.beepBoop && test4){
+            test4 = false;
         }
     }
 

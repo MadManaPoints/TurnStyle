@@ -5,7 +5,6 @@ using UnityEngine;
 public class RightFoot : MonoBehaviour
 {   
     public bool canMoveLeg;
-    float speed = 1.0f;
     Vector3 pos;
     [SerializeField] Vector3 offset; 
     [SerializeField] Vector2 x;

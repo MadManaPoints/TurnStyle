@@ -5,7 +5,6 @@ using Unity.VisualScripting;
 using Unity.VisualScripting.FullSerializer.Internal;
 using TMPro;
 using UnityEngine;
-using Microsoft.Unity.VisualStudio.Editor;
 
 public class RotateTurnstile : MonoBehaviour
 {
@@ -17,7 +16,6 @@ public class RotateTurnstile : MonoBehaviour
     public bool stuck;
     public bool waitForRotation;
     bool grabSwitch;
-    bool setPos = true;
     public float rotateSpeed = 3.0f;
     static float t = 0.0f;
     float rotateZ = 180.0f;
@@ -127,8 +125,10 @@ public class RotateTurnstile : MonoBehaviour
             moveY = 0f;
         }
             rotateZ = map(moveY, -1, 1, backward, forward);
+        
+        //Debug.Log(moveY);
 
-        if(rotateZ < backward + 30){
+        if(moveY < -0.3f){
             ad.GetComponent<Renderer>().material.SetTexture("_MainTex", stepTwo);
             adText.text = "RB";
             thumbStick.text = "L";
