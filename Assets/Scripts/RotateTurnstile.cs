@@ -36,12 +36,12 @@ public class RotateTurnstile : MonoBehaviour
     HingeJoint joint;
     JointLimits limits;
     [SerializeField] TextMeshProUGUI adText, thumbStick;
-    [SerializeField] Texture stepOne, stepTwo; 
     [SerializeField] GameObject ad;
     [SerializeField] Transform initialTransform;
     public bool resetRot = false;
     [SerializeField] GameObject bar;
     [SerializeField] Material barMat;
+    [SerializeField] GameObject stepOne, stepTwo; 
     bool startBarEmission;
     public bool turningSound; 
     public bool turnSoundSwitch; 
@@ -64,6 +64,10 @@ public class RotateTurnstile : MonoBehaviour
 
         initialTransform.position = transform.position;
         initialTransform.rotation = transform.rotation;
+
+        //hide the directions in the beginning
+        stepOne.SetActive(false);
+        stepTwo.SetActive(false);
     }
 
     void Update()
@@ -71,6 +75,7 @@ public class RotateTurnstile : MonoBehaviour
         if(moveTurnstile){
             playerControl = true;
             bar.GetComponent<Renderer>().material = barMat;
+            stepOne.SetActive(true);
         } else {
             playerControl = false;
         }
@@ -83,6 +88,9 @@ public class RotateTurnstile : MonoBehaviour
 
         MotorBehavior();
   
+        if(rightArm.finalPhase){
+            stepOne.SetActive(true);
+        }
     }
 
     void FixedUpdate(){
@@ -127,20 +135,11 @@ public class RotateTurnstile : MonoBehaviour
             moveY = 0f;
         }
             rotateZ = map(moveY, -1, 1, backward, forward);
-        
-        //Debug.Log(moveY);
-
-        if(moveY < -0.3f){
-            ad.GetComponent<Renderer>().material.SetTexture("_MainTex", stepTwo);
-            adText.text = "RB";
-            thumbStick.text = "L";
-        } else {
-            ad.GetComponent<Renderer>().material.SetTexture("_MainText", stepOne);
-            adText.text = "RT";
-            thumbStick.text = "R";
-        }
 
         //Debug.Log(rotateZ);
+        if(moveY < -0.3){
+            stepTwo.SetActive(true);
+        }
 
         ThumpAudio(moveY);
 
